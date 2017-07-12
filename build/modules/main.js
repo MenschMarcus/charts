@@ -125,7 +125,18 @@ var main = {
           states: ['automatic', 'fixed']
         }
       }, {
-        name: 'availability-chart'
+        name: 'availability-chart',
+        margin: // [px]
+        {
+          left: 30,
+          top: 0,
+          right: 30,
+          bottom: -50
+        },
+        style: {
+          gridWidth: 1,
+          squareWidth: 25
+        }
       }]
     }
   }
