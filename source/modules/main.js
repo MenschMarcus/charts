@@ -1,6 +1,6 @@
 // 0: Weimar
 // 1: Cherrapunjee
-const climateDataIdx = 1
+const climateDataIdx = 0
 
 
 const MONTHS_IN_YEAR =
@@ -42,23 +42,24 @@ let main =
       },
       fontSizes:    // [px]
       {
-        basic:      15,
-        title:      15,
-        subtitle:   15,
-        source:     12,
+        basic:          15,
+        title:          15,
+        subtitle:       15,
+        source:         12,
       },
-      padding:      5,
+      padding:          5,
       colors:
       {
-        temp:         d3.rgb(230,20, 20 ),
-        prec:         d3.rgb(4,  61, 183),
-        arid:         d3.rgb(255,233,15 ),
-        humid:        d3.rgb(89, 131,213),
-        perhumid:     d3.rgb(4,  61, 183),
-        grid:         d3.rgb(211,211,211),
-        axes:         d3.rgb(255,255,255),
+        temp:           d3.rgb(230,20, 20 ),
+        prec:           d3.rgb(4,  61, 183),
+        arid:           d3.rgb(255,233,15 ),
+        humid:          d3.rgb(89, 131,213),
+        perhumid:       d3.rgb(4,  61, 183),
+        grid:           d3.rgb(211,211,211),
+        axes:           d3.rgb(255,255,255),
+        notAvailable:   d3.rgb(240,240,240),
       },
-      footerOpacity:  0.4,
+      footerOpacity:    0.4,
       charts:
       [
         {
@@ -173,6 +174,14 @@ let main =
           {
             gridWidth:    1,
             squareWidth:  25,
+            rowHeadWidth: 20,   // Width of row "heading" (year number)
+            colHeadHeight:12,   // Height of col heading (month / value)
+            headFontSize: 0.75,  // [em] heading font size
+          },
+          headings:
+          {
+            temp:         "Temp",
+            prec:         "Prec",
           }
         },
       ],

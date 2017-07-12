@@ -2,7 +2,7 @@
 
 // 0: Weimar
 // 1: Cherrapunjee
-var climateDataIdx = 1;
+var climateDataIdx = 0;
 
 var MONTHS_IN_YEAR = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -45,7 +45,8 @@ var main = {
         humid: d3.rgb(89, 131, 213),
         perhumid: d3.rgb(4, 61, 183),
         grid: d3.rgb(211, 211, 211),
-        axes: d3.rgb(255, 255, 255)
+        axes: d3.rgb(255, 255, 255),
+        notAvailable: d3.rgb(240, 240, 240)
       },
       footerOpacity: 0.4,
       charts: [{
@@ -135,7 +136,13 @@ var main = {
         },
         style: {
           gridWidth: 1,
-          squareWidth: 25
+          squareWidth: 25,
+          rowHeadWidth: 20, // Width of row "heading" (year number)
+          colHeadHeight: 12, // Height of col heading (month / value)
+          headFontSize: 0.75 },
+        headings: {
+          temp: "Temp",
+          prec: "Prec"
         }
       }]
     }

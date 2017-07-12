@@ -45,11 +45,13 @@ class AvailabilityChart extends Chart
         + this._mainPos.left
         + this._chartsMain.padding
         + this._chartMain.margin.left
+        + this._chartMain.style.rowHeadWidth
       ),
       top: ( 0
         + this._mainPos.top
         + this._chartsMain.padding
         + this._chartMain.margin.top
+        + this._chartMain.style.colHeadHeight*2
       ),
       right: ( 0
         + this._mainPos.right
@@ -79,35 +81,70 @@ class AvailabilityChart extends Chart
     // Setup grid
     // ------------------------------------------------------------------------
 
-    let gridData = new Array()
+    // Actual data: 2d array gridData[year][2*month]
+    // 1) temp, 2) prec
+    // => [0] = Jan temp, [1] = Jan prec, [2] = Feb temp, ... , [23] = Dec prec
+    let gridData = []
+
+    // Number of years = number of rows
+    let numYears = this._climateData.years[1]-this._climateData.years[0]+1
+
+    // Inital values for calculating svg rect positions
   	let xPos = this._chartPos.left
   	let yPos = this._chartPos.top
   	let width = this._chartPos.width / (MONTHS_IN_YEAR.length*2)
-  	let color = this._chartsMain.colors.grid
 
-  	// Iterate for rows
-  	for (let row = 0; row < 10; row++)
+    // For each year
+  	for (let yearIdx = 0; yearIdx < numYears; yearIdx++)
     {
-  		gridData.push( new Array() )
+  		gridData.push([])
 
-  		// Iterate for cells/columns inside rows
-  		for (let column = 0; column < MONTHS_IN_YEAR.length*2; column++)
+      // For each month
+  		for (let monthIdx = 0; monthIdx < MONTHS_IN_YEAR.length; monthIdx++)
       {
-  			gridData[row].push(
+        // Is temp value existing?
+        // Default: no => default color
+        let tempColor = this._chartsMain.colors.temp
+        // If no value => color as not availble
+        if (!this._isNumber(this._climateData.temp[monthIdx].raw_data[yearIdx]))
+          tempColor = this._chartsMain.colors.notAvailable
+
+        // Add new grid data
+        gridData[yearIdx].push(
           {
-            x: xPos,
-    				y: yPos,
-    				width: width,
-    				height: width,
-            color: color
-  			  }
+            x:      xPos,
+            y:      yPos,
+            width:  width,
+            height: width,
+            color:  tempColor,
+          }
         )
-  			// Increment the x position. I.e. move it over by 50 (width variable)
-  			xPos += width
+
+        // Increment the x position => move it over
+        xPos += width
+
+        // same procedure for prec value
+        let precColor = this._chartsMain.colors.prec
+        if (!this._isNumber(this._climateData.prec[monthIdx].raw_data[yearIdx]))
+          precColor = this._chartsMain.colors.notAvailable
+
+        gridData[yearIdx].push(
+          {
+            x:      xPos,
+            y:      yPos,
+            width:  width,
+            height: width,
+            color:  precColor,
+          }
+        )
+
+        // Increment the x position => move it over
+        xPos += width
+
   		}
   		// Reset the x position after a row is complete
   		xPos = this._chartPos.left
-  		// Increment the y position for the next row. Move it down 50 (height variable)
+  		// Increment the y position for the next row => Move it down
   		yPos += width
   	}
 
@@ -126,33 +163,113 @@ class AvailabilityChart extends Chart
     	.attr("y",       (d) => { return d.y })
     	.attr("width",   (d) => { return d.width })
     	.attr("height",  (d) => { return d.height })
-    	.style("fill",   (d) => { return d.value })
+    	.style("fill",   (d) => { return d.color })
 
     this._chart.selectAll('.grid')
-      .style('fill', 'none')
       .style('stroke', this._chartsMain.colors.grid)
       .style('stroke-width', this._chartMain.style.gridWidth + ' px')
       .attr('shape-rendering', 'crispEdges')
 
-    // ------------------------------------------------------------------------
-    // Table heading
-    // ------------------------------------------------------------------------
+    this._resizeChartHeight(500)
 
 
     // ------------------------------------------------------------------------
-    // 1st column: year
+    // Table heading (months) and 1st column (year)
     // ------------------------------------------------------------------------
 
+    // Make row headings: year number
+    yPos = 0
+      + this._chartPos.top
+      + width/2
+      + this._chartsMain.padding
 
-    // ------------------------------------------------------------------------
-    // Fill remaning data cells
-    // ------------------------------------------------------------------------
+    for (let yearIdx = 0; yearIdx < numYears; yearIdx++)
+    {
+      let year = this._climateData.years[0]+yearIdx
+      // Place heading
+      this._chart.append('text')
+        .attr('class', 'ac-year')
+        .attr('text-anchor', 'end')
+        .attr('font-size', (this._chartMain.style.headFontSize + "em"))
+        .attr('x', 0
+          + this._chartPos.left
+          - this._chartsMain.padding
+        )
+        .attr('y', yPos)
+        .text(year)
+      // Go to next y position
+      yPos += width
+    }
+
+
+    // make column headings:
+    // 1) year (12) 2) data type prec/temp (12*2=24)
+    //   Jan     Feb     Mar    ...
+    //  T   P   T   P   T   P   ...
+    xPos = 0
+      + this._chartPos.left
+      + width
+
+    for (let monthIdx = 0; monthIdx < MONTHS_IN_YEAR.length; monthIdx++)
+    {
+      let month = MONTHS_IN_YEAR[monthIdx]
+
+      // Place 1st heading: month
+      this._chart.append('text')
+        .attr('class', 'ac-year')
+        .attr('text-anchor', 'middle')
+        .attr('x', xPos)
+        .attr('y', 0
+          + this._chartPos.top
+          - this._chartMain.style.colHeadHeight*2
+        )
+        .text(month)
+
+      // Place 2nd heading: T | P
+      this._chart.append('text')
+        .attr('class', 'ac-year')
+        .attr('text-anchor', 'middle')
+        .attr('font-size', (this._chartMain.style.headFontSize + "em"))
+        .attr('x', 0
+          + xPos
+          - width/2
+        )
+        .attr('y', 0
+          + this._chartPos.top
+          - this._chartMain.style.colHeadHeight
+          + this._chartsMain.padding
+        )
+        .text(this._chartMain.headings.temp)
+
+      this._chart.append('text')
+        .attr('class', 'ac-year')
+        .attr('text-anchor', 'middle')
+        .attr('font-size', (this._chartMain.style.headFontSize + "em"))
+        .attr('x', 0
+          + xPos
+          + width/2
+        )
+        .attr('y', 0
+          + this._chartPos.top
+          - this._chartMain.style.colHeadHeight
+          + this._chartsMain.padding
+        )
+        .text(this._chartMain.headings.prec)
+
+      // Increment to next month
+      xPos += (2*width)
+    }
+
   }
 
 
   // ==========================================================================
-  // Create grid
+  // Helper function: check if value is a number
   // ==========================================================================
 
+  _isNumber(n)
+  {
+    return (!isNaN(parseFloat(n)) && isFinite(n))
+  }
 
 }

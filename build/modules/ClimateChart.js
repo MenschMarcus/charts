@@ -211,6 +211,10 @@ var ClimateChart = function (_Chart) {
       // Change the total height of the chart
       this._resizeChartHeight(shiftUpAboveBreak);
 
+      // ------------------------------------------------------------------------
+      // Setup axes
+      // ------------------------------------------------------------------------
+
       // x-Axis
 
       var xScale = d3.scale.ordinal().domain(MONTHS_IN_YEAR).range([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]).rangePoints([this._chartPos.left, this._chartPos.right], 0);

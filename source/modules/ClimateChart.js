@@ -271,6 +271,10 @@ class ClimateChart extends Chart
     this._resizeChartHeight(shiftUpAboveBreak)
 
 
+    // ------------------------------------------------------------------------
+    // Setup axes
+    // ------------------------------------------------------------------------
+
     // x-Axis
 
     let xScale = d3.scale
