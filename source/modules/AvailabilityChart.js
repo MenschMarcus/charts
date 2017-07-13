@@ -40,7 +40,8 @@ class AvailabilityChart extends Chart
 
     // Position values of actual climate chart
     // Pos from top, bottom, left, right and position of horizontal break bar
-    this._chartPos = {
+    this._chartPos =
+    {
       left: ( 0
         + this._mainPos.left
         + this._chartsMain.padding
@@ -87,7 +88,7 @@ class AvailabilityChart extends Chart
     let gridData = []
 
     // Number of years = number of rows
-    let numYears = this._climateData.years[1]-this._climateData.years[0]+1
+    let numYears = this._climateData.years[1] - this._climateData.years[0] + 1
 
     // Inital values for calculating svg rect positions
   	let xPos = this._chartPos.left

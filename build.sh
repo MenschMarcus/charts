@@ -71,6 +71,10 @@ babel --presets=es2015 $js_files -d $BUILD_PATH
 css_files=$(find $SOURCE_PATH -name "*.css")
 cp $css_files $BUILD_PATH --parents -r
 
+## *.csv: simply copy
+csv_files=$(find $SOURCE_PATH -name "*.csv")
+cp $csv_files $BUILD_PATH --parents -r
+
 # Third-party libs (js and css files): Copy everything
 third_party_files=$(find $THIRD_PARTY_PATH)
 cp $third_party_files $BUILD_PATH --parents -r

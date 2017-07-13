@@ -112,12 +112,12 @@ class Chart
     // Assemble subtitle (location | elevation | climate class | years)
     this._subtitle = this._climateData.location.DD
     if (this._climateData.elevation)
-      this._subtitle += " | Elevation: "     + this._climateData.elevation
+      this._subtitle += ' | Elevation: '     + this._climateData.elevation
     if (this._climateData.climate_class)
-      this._subtitle += " | Climate Class: " + this._climateData.climate_class
-    this._subtitle +=   " | Years: "
+      this._subtitle += ' | Climate Class: ' + this._climateData.climate_class
+    this._subtitle +=   ' | Years: '
                         + this._climateData.years[0]
-                        + "-"
+                        + '-'
                         + this._climateData.years[1]
       // TODO: gap years (appendix in this._climateData.years[2])
 
@@ -156,7 +156,7 @@ class Chart
 
     // Add actual chart -> svg canvas
     this._chart = d3.select(chartWrapper)
-      .classed("svg-container", true)
+      .classed('svg-container', true)
       .append('svg')
       .attr('id', this._chartMain.name)
       .attr('version', 1.1)
@@ -212,62 +212,63 @@ class Chart
   _setupHeaderFooter()
   {
     // Title
-    this._chart.append("text")
-      .attr("id", this._chartName + '-title')
-      .attr("class", "chart-header chart-title")
-      .attr("x", this._chartsMain.positions.width/2)
-      .attr("y", 0
+    this._chart.append('text')
+      .attr('id', this._chartName + '-title')
+      .attr('class', 'chart-header chart-title')
+      .attr('x', this._chartsMain.positions.width/2)
+      .attr('y', 0
         + this._chartsMain.positions.title.top
         + this._chartsMain.padding
       )
-
-      .attr("text-anchor", "middle")
+      .attr('text-anchor', 'middle')
+      .style('font-size', this._chartsMain.fontSizes.title)
       .text(this._title)
 
     // Subtitle
-    this._chart.append("text")
-      .attr("class", "chart-header chart-subtitle")
-      .attr("x", this._chartsMain.positions.width/2)
-      .attr("y", 0
+    this._chart.append('text')
+      .attr('class', 'chart-header chart-subtitle')
+      .attr('x', this._chartsMain.positions.width/2)
+      .attr('y', 0
         + this._chartsMain.positions.subtitle.top
         + this._chartsMain.padding
       )
-      .attr("text-anchor", "middle")
+      .attr('text-anchor', 'middle')
+      .style('font-size', this._chartsMain.fontSizes.subtitle)
       .text(this._subtitle)
 
     // Footer: Source link
     this._footerElems = [2]
-    this._footerElems[0] = this._chart.append("text")
-      .attr("class", "source")
-      .attr("x", 0
+    this._footerElems[0] = this._chart.append('text')
+      .attr('class', 'source')
+      .attr('x', 0
         + this._chartsMain.padding
       )
-      .attr("y", 0
+      .attr('y', 0
         + this._chartsMain.positions.footer.top
         - this._chartsMain.padding
       )
-      .style("cursor", "pointer")
-      .style("font-size", this._chartsMain.fontSizes.source + "px")
-      .style("opacity", this._chartsMain.footerOpacity)
-      // .attr("link" + this._climateData.source_link)
-      .text("Data Source: " + this._climateData.source)
-      .on("click", () => { window.open(this.link) })
+      .style('cursor', 'pointer')
+      .style('font-size', this._chartsMain.fontSizes.source + 'px')
+      .style('opacity', this._chartsMain.footerOpacity)
+      // .attr('link' + this._climateData.source_link)
+      .text('Data Source: ' + this._climateData.source)
+      .on('click', () => { window.open(this.link) })
 
     // Footer: Reference URL
-    this._footerElems[1] = this._chart.append("text")
-      .append("tspan")
-      .attr("class", "source")
-      .attr("x", 0
+    this._footerElems[1] = this._chart.append('text')
+      .append('tspan')
+      .attr('class', 'source')
+      .attr('x', 0
         + this._chartsMain.positions.width
         - this._chartsMain.padding
       )
-      .attr("y", 0
+      .attr('y', 0
         + this._chartsMain.positions.footer.top
         - this._chartsMain.padding
       )
-      .style("text-anchor", "end")
-      .style("font-size", this._chartsMain.fontSizes.source + "px")
-      .style("opacity", this._chartsMain.footerOpacity)
+      .style('text-anchor', 'end')
+      .style('font-size', this._chartsMain.fontSizes.source + 'px')
+      .style('opacity', this._chartsMain.footerOpacity)
       .text(this._refURL)
   }
 
@@ -293,8 +294,8 @@ class Chart
     // Reset footer elements
     for (let footerElem of this._footerElems)
     {
-      let oldY = parseFloat(footerElem.attr("y"))
-      footerElem.attr("y", oldY + shiftUp)
+      let oldY = parseFloat(footerElem.attr('y'))
+      footerElem.attr('y', oldY + shiftUp)
     }
   }
 }
