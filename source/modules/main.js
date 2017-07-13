@@ -110,14 +110,14 @@ let main =
             },
             margin:     // [px]
             {
-              top:      12,   // downshift from top line
-              right:    10,   // right margin for right-aligned cell values
-              left:     20,   // right margin for left-aligned cell values
+              top:      12,   // Downshift from top line
+              right:    10,   // Right margin for right-aligned cell values
+              left:     20,   // Right margin for left-aligned cell values
             },
           },
           mouseover:
           {
-            circleRadius:   5.0,    // [px]
+            circleRadius:   5.0,  // [px]
             strokeWidth:    2.0,  // [px]
           }
         },
@@ -145,7 +145,7 @@ let main =
             top:        100,
             right:      30,
             bottom:     80,
-            separator:  10,  // distance between temp and prec subplots
+            separator:  10,  // Distance between temp and prec subplots
           },
           height:       500,  // [px]
           plotTitleTop: 85,   // [px] the subplot titles have to move up
@@ -172,11 +172,13 @@ let main =
           },
           style:
           {
-            gridWidth:    1,
-            squareWidth:  25,
-            rowHeadWidth: 20,   // Width of row "heading" (year number)
-            colHeadHeight:12,   // Height of col heading (month / value)
-            headFontSize: 0.75,  // [em] heading font size
+            gridWidth:        1,
+            squareWidth:      25,   // Dimension of cell sqares
+            rowHeadWidth:     20,   // Width of row "heading" (year number)
+            colHeadHeight:    12,   // Height of col heading (month / value)
+            headFontSize:     0.75, // [em] heading font size
+            cellOpacity:      0.55, // Opacity value for colored cells
+            emphResizeFactor: 2.00,  // OnHover on cell, resize to
           },
           headings:
           {

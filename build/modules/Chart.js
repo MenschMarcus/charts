@@ -44,7 +44,7 @@ var Chart = function () {
         var chart = _step.value;
 
         if (chart.name == chartName) this._chartMain = chart;
-      } // Actual chart data
+      } // Copy height of the chart, to never override main
     } catch (err) {
       _didIteratorError = true;
       _iteratorError = err;
@@ -60,6 +60,9 @@ var Chart = function () {
       }
     }
 
+    this._chartHeight = this._chartsMain.positions.height;
+
+    // Actual chart data
     this._climateData = climateData;
 
     // Helper
@@ -162,7 +165,7 @@ var Chart = function () {
       parentContainer.append(chartWrapper);
       this._chartWrapper = $('#' + this._chartMain.name + '-wrapper');
       this._chartWrapper.css('width', this._chartsMain.positions.width);
-      this._chartWrapper.css('height', this._chartsMain.positions.height);
+      this._chartWrapper.css('height', this._chartHeight);
 
       // Add toolbar container
       // -> will be placed on top of chart, but will not be printed
@@ -171,11 +174,11 @@ var Chart = function () {
       this._chartWrapper[0].appendChild(this._toolbar);
 
       // Add actual chart -> svg canvas
-      this._chart = d3.select(chartWrapper).classed("svg-container", true).append('svg').attr('id', this._chartMain.name).attr('version', 1.1).attr('xmlns', 'http://www.w3.org/2000/svg').attr('preserveAspectRatio', 'xMinYMin meet').attr('width', this._chartsMain.positions.width).attr('height', this._chartsMain.positions.height)
+      this._chart = d3.select(chartWrapper).classed("svg-container", true).append('svg').attr('id', this._chartMain.name).attr('version', 1.1).attr('xmlns', 'http://www.w3.org/2000/svg').attr('preserveAspectRatio', 'xMinYMin meet').attr('width', this._chartsMain.positions.width).attr('height', this._chartHeight)
       // Do not use viewBox, since it incorporates a new coordinate systems
       // .attr('viewBox', ''
       //   + '0 0 '  + this._chartsMain.positions.width
-      //   + ' '     + this._chartsMain.positions.height
+      //   + ' '     + this._chartHeight
       // )
       .classed('svg-content-responsive', true).style('font-size', this._chartsMain.fontSizes.basic + 'px').style('font-family', 'Arial, sans-serif').style('font-style', 'normal').style('font-variant', 'normal').style('font-weight', 'normal').style('shape-rendering', 'default').style('text-rendering', 'optimizeLegibility').style('background-color', 'transparent');
 
@@ -184,7 +187,7 @@ var Chart = function () {
         left: 0,
         top: 0 + this._chartsMain.positions.main.top,
         right: 0 + this._chartsMain.positions.width,
-        bottom: 0 + this._chartsMain.positions.height - this._chartsMain.positions.main.top - this._chartsMain.positions.main.bottom
+        bottom: 0 + this._chartHeight - this._chartsMain.positions.main.top - this._chartsMain.positions.main.bottom
       };
 
       this._mainPos.width = 0 + this._mainPos.right - this._mainPos.left;
@@ -226,7 +229,7 @@ var Chart = function () {
     key: "_resizeChartHeight",
     value: function _resizeChartHeight(shiftUp) {
       // Reset model: Shift full height
-      this._chartsMain.positions.height += shiftUp;
+      this._chartHeight += shiftUp;
       this._mainPos.bottom += shiftUp;
       this._mainPos.height += shiftUp;
 
@@ -234,8 +237,8 @@ var Chart = function () {
       this._chartsMain.positions.footer.top += shiftUp;
 
       // Reset view: parent wrapper and svg container
-      this._chartWrapper.css('height', this._chartsMain.positions.height);
-      this._chart.attr('height', this._chartsMain.positions.height);
+      this._chartWrapper.css('height', this._chartHeight);
+      this._chart.attr('height', this._chartHeight);
 
       // Reset footer elements
       var _iteratorNormalCompletion2 = true;

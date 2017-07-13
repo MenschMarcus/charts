@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -43,7 +43,7 @@ var AvailabilityChart = function (_Chart) {
   // ==========================================================================
 
   _createClass(AvailabilityChart, [{
-    key: "_initMembers",
+    key: '_initMembers',
     value: function _initMembers() {
       // ------------------------------------------------------------------------
       // Preparation: Position values for visualization elements
@@ -66,8 +66,10 @@ var AvailabilityChart = function (_Chart) {
     // ==========================================================================
 
   }, {
-    key: "_drawChart",
+    key: '_drawChart',
     value: function _drawChart() {
+      var _this2 = this;
+
       // ------------------------------------------------------------------------
       // Setup grid
       // ------------------------------------------------------------------------
@@ -91,34 +93,36 @@ var AvailabilityChart = function (_Chart) {
 
         // For each month
         for (var monthIdx = 0; monthIdx < MONTHS_IN_YEAR.length; monthIdx++) {
+          var tempValue = this._climateData.temp[monthIdx].raw_data[yearIdx];
           // Is temp value existing?
-          // Default: no => default color
+          // -> If yes: default color
+          // -> If not: color as 'not availble'
           var tempColor = this._chartsMain.colors.temp;
-          // If no value => color as not availble
-          if (!this._isNumber(this._climateData.temp[monthIdx].raw_data[yearIdx])) tempColor = this._chartsMain.colors.notAvailable;
+          if (!this._isNumber(tempValue)) tempColor = this._chartsMain.colors.notAvailable;
 
           // Add new grid data
           gridData[yearIdx].push({
             x: xPos,
             y: yPos,
             width: width,
-            height: width,
-            color: tempColor
+            color: tempColor,
+            value: tempValue
           });
 
           // Increment the x position => move it over
           xPos += width;
 
           // same procedure for prec value
+          var precValue = this._climateData.prec[monthIdx].raw_data[yearIdx];
           var precColor = this._chartsMain.colors.prec;
-          if (!this._isNumber(this._climateData.prec[monthIdx].raw_data[yearIdx])) precColor = this._chartsMain.colors.notAvailable;
+          if (!this._isNumber(precValue)) precColor = this._chartsMain.colors.notAvailable;
 
           gridData[yearIdx].push({
             x: xPos,
             y: yPos,
             width: width,
-            height: width,
-            color: precColor
+            color: precColor,
+            value: precValue
           });
 
           // Increment the x position => move it over
@@ -130,24 +134,52 @@ var AvailabilityChart = function (_Chart) {
         yPos += width;
       }
 
-      var row = this._chart.selectAll(".row").data(gridData).enter().append("g").attr("class", "row");
+      var row = this._chart.selectAll('.row').data(gridData).enter().append('g').attr('class', 'row');
 
-      var column = row.selectAll(".square").data(function (d) {
+      var inCellOverlay = false;
+
+      var column = row.selectAll('.square').data(function (d) {
         return d;
-      }).enter().append("rect").attr("class", "grid").attr("x", function (d) {
+      }).enter().append('rect').attr('class', 'grid').attr('x', function (d) {
         return d.x;
-      }).attr("y", function (d) {
+      }).attr('y', function (d) {
         return d.y;
-      }).attr("width", function (d) {
+      }).attr('width', function (d) {
         return d.width;
-      }).attr("height", function (d) {
-        return d.height;
-      }).style("fill", function (d) {
+      }).attr('height', function (d) {
+        return d.width;
+      }).style('fill', function (d) {
         return d.color;
+      }).style('opacity', this._chartMain.style.cellOpacity).style('stroke', this._chartsMain.colors.grid).style('stroke-width', this._chartMain.style.gridWidth + ' px').attr('shape-rendering', 'crispEdges')
+
+      // Interaction: on hover, emphasize and show data value
+      .on('mouseover', function (d) {
+        var oldWidth = d.width;
+        var newWidth = d.width * _this2._chartMain.style.emphResizeFactor;
+
+        // Error handling: if currently in a cell overlay, remove it
+        if (inCellOverlay) {
+          $('#active-ac-cell').remove();
+          $('#active-ac-cell-text').remove();
+        }
+
+        inCellOverlay = true;
+
+        // Create overlay rectangle on top of the old one
+        _this2._chart.append('rect').attr('id', 'active-ac-cell').attr('x', d.x - (newWidth - oldWidth) / 2).attr('y', d.y - (newWidth - oldWidth) / 2).attr('width', newWidth).attr('height', newWidth).style('fill', d.color).style('opacity', 1).style('stroke', 'white').style('stroke-width', _this2._chartMain.style.gridWidth + ' px')
+
+        // Interaction: on leave, remove both overlay and text
+        .on('mouseleave', function (d) {
+          $('#active-ac-cell').remove();
+          $('#active-ac-cell-text').remove();
+          inCellOverlay = false;
+        });
+
+        // Create text containing the actual value
+        _this2._chart.append('text').attr('id', 'active-ac-cell-text').attr('x', d.x + d.width / 2).attr('y', d.y + _this2._chartsMain.padding).attr('text-anchor', 'middle').attr('fill', 'white').text(d.value);
       });
 
-      this._chart.selectAll('.grid').style('stroke', this._chartsMain.colors.grid).style('stroke-width', this._chartMain.style.gridWidth + ' px').attr('shape-rendering', 'crispEdges');
-
+      // TODO: generic!
       this._resizeChartHeight(500);
 
       // ------------------------------------------------------------------------
@@ -160,7 +192,7 @@ var AvailabilityChart = function (_Chart) {
       for (var _yearIdx = 0; _yearIdx < numYears; _yearIdx++) {
         var year = this._climateData.years[0] + _yearIdx;
         // Place heading
-        this._chart.append('text').attr('class', 'ac-year').attr('text-anchor', 'end').attr('font-size', this._chartMain.style.headFontSize + "em").attr('x', 0 + this._chartPos.left - this._chartsMain.padding).attr('y', yPos).text(year);
+        this._chart.append('text').attr('class', 'ac-year').attr('text-anchor', 'end').attr('font-size', this._chartMain.style.headFontSize + 'em').attr('x', 0 + this._chartPos.left - this._chartsMain.padding).attr('y', yPos).text(year);
         // Go to next y position
         yPos += width;
       }
@@ -178,9 +210,9 @@ var AvailabilityChart = function (_Chart) {
         this._chart.append('text').attr('class', 'ac-year').attr('text-anchor', 'middle').attr('x', xPos).attr('y', 0 + this._chartPos.top - this._chartMain.style.colHeadHeight * 2).text(month);
 
         // Place 2nd heading: T | P
-        this._chart.append('text').attr('class', 'ac-year').attr('text-anchor', 'middle').attr('font-size', this._chartMain.style.headFontSize + "em").attr('x', 0 + xPos - width / 2).attr('y', 0 + this._chartPos.top - this._chartMain.style.colHeadHeight + this._chartsMain.padding).text(this._chartMain.headings.temp);
+        this._chart.append('text').attr('class', 'ac-year').attr('text-anchor', 'middle').attr('font-size', this._chartMain.style.headFontSize + 'em').attr('x', 0 + xPos - width / 2).attr('y', 0 + this._chartPos.top - this._chartMain.style.colHeadHeight + this._chartsMain.padding).text(this._chartMain.headings.temp);
 
-        this._chart.append('text').attr('class', 'ac-year').attr('text-anchor', 'middle').attr('font-size', this._chartMain.style.headFontSize + "em").attr('x', 0 + xPos + width / 2).attr('y', 0 + this._chartPos.top - this._chartMain.style.colHeadHeight + this._chartsMain.padding).text(this._chartMain.headings.prec);
+        this._chart.append('text').attr('class', 'ac-year').attr('text-anchor', 'middle').attr('font-size', this._chartMain.style.headFontSize + 'em').attr('x', 0 + xPos + width / 2).attr('y', 0 + this._chartPos.top - this._chartMain.style.colHeadHeight + this._chartsMain.padding).text(this._chartMain.headings.prec);
 
         // Increment to next month
         xPos += 2 * width;
@@ -192,7 +224,7 @@ var AvailabilityChart = function (_Chart) {
     // ==========================================================================
 
   }, {
-    key: "_isNumber",
+    key: '_isNumber',
     value: function _isNumber(n) {
       return !isNaN(parseFloat(n)) && isFinite(n);
     }

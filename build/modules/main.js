@@ -89,8 +89,8 @@ var main = {
           },
           margin: // [px]
           {
-            top: 12, // downshift from top line
-            right: 10, // right margin for right-aligned cell values
+            top: 12, // Downshift from top line
+            right: 10, // Right margin for right-aligned cell values
             left: 20 }
         },
         mouseover: {
@@ -136,10 +136,12 @@ var main = {
         },
         style: {
           gridWidth: 1,
-          squareWidth: 25,
+          squareWidth: 25, // Dimension of cell sqares
           rowHeadWidth: 20, // Width of row "heading" (year number)
           colHeadHeight: 12, // Height of col heading (month / value)
-          headFontSize: 0.75 },
+          headFontSize: 0.75, // [em] heading font size
+          cellOpacity: 0.55, // Opacity value for colored cells
+          emphResizeFactor: 2.00 },
         headings: {
           temp: "Temp",
           prec: "Prec"
