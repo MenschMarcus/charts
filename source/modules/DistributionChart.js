@@ -1,7 +1,7 @@
 // ############################################################################
 // DistributionChart                                                       View
 // ############################################################################
-// Credits to: Mike Bostock
+// Credits to: "Box Plots", Mike Bostock, access: 14.07.2017
 // https://bl.ocks.org/mbostock/4061502
 // ############################################################################
 
@@ -174,147 +174,107 @@ class DistributionChart extends Chart
 
   _drawChart()
   {
+    // ------------------------------------------------------------------------
+    // Prepare the data
+    // Required format: array of arrays with data[d][m][2]
+    //    d =               number of data types (2)
+    //    m =               number of months (12)
+    //    data[i][j][0] =   name of the ith column (month + data type)
+    //    data[i][j][1] =   array of values for this month
+    // ------------------------------------------------------------------------
 
-    let labels = false // show the text labels beside individual boxplots?
+    // Get climate data and min/max values (0: temp, 1: prec)
+    let climateData = []
+    let min = []
+    let max = []
 
-    let margin = {top: 30, right: 50, bottom: 70, left: 50}
-    let  width = 800 - margin.left - margin.right
-    let height = 400 - margin.top - margin.bottom
-
-    let min = Infinity,
-        max = -Infinity
-
-    // parse in the data
-    d3.csv('build/modules/data.csv', (error, csv) =>
+    // For each data type (temp and prec)
+    for (let datatypeIdx = 0; datatypeIdx < 2; datatypeIdx++)
     {
-    	// using an array of arrays with
-    	// data[n][2]
-    	// where n = number of columns in the csv file
-    	// data[i][0] = name of the ith column
-    	// data[i][1] = array of values of ith column
+      // Create empty arrays
+      climateData[datatypeIdx] = []
+      min[datatypeIdx] = +Infinity
+      max[datatypeIdx] = -Infinity
 
-    	let data = []
-    	data[0] = []
-    	data[1] = []
-    	data[2] = []
-    	data[3] = []
-    	// add more rows if your csv file has more columns
+      // For each month
+      for (let monthIdx = 0; monthIdx < MONTHS_IN_YEAR.length; monthIdx++)
+      {
+        // Create empty array
+        climateData[datatypeIdx][monthIdx] = []
 
-    	// add here the header of the csv file
-    	data[0][0] = 'Q1'
-    	data[1][0] = 'Q2'
-    	data[2][0] = 'Q3'
-    	data[3][0] = 'Q4'
-    	// add more rows if your csv file has more columns
+        // Name month
+        climateData[datatypeIdx][monthIdx][0] = MONTHS_IN_YEAR[monthIdx]
 
-    	data[0][1] = []
-    	data[1][1] = []
-    	data[2][1] = []
-    	data[3][1] = []
+        // Get data values
+        let values = null
+        if (datatypeIdx == 0)       // Temp
+          values = this._climateData.temp_long[monthIdx]
+        else if (datatypeIdx == 1)  // Prec
+          values = this._climateData.prec_long[monthIdx]
+        climateData[datatypeIdx][monthIdx][1] = values
 
-    	csv.forEach((x) => {
-    		let v1 = Math.floor(x.Q1),
-    			v2 = Math.floor(x.Q2),
-    			v3 = Math.floor(x.Q3),
-    			v4 = Math.floor(x.Q4)
-    			// add more variables if your csv file has more columns
-
-    		let rowMax = Math.max(v1, Math.max(v2, Math.max(v3,v4)))
-    		let rowMin = Math.min(v1, Math.min(v2, Math.min(v3,v4)))
-
-    		data[0][1].push(v1)
-    		data[1][1].push(v2)
-    		data[2][1].push(v3)
-    		data[3][1].push(v4)
-    		 // add more rows if your csv file has more columns
-
-    		if (rowMax > max) max = rowMax
-    		if (rowMin < min) min = rowMin
-    	})
-
-    	let chart = d3.boxplot()
-    		.whiskers(iqr(1.5))
-    		.height(this._chartPos.height)
-    		.domain([min, max])
-    		.showLabels(labels)
-
-      d3.select('#distribution-chart')
-    		.attr('class', 'boxplot')
-    		.append('g')
-    		.attr('transform', 'translate(' + this._chartMain.margin.left + ',' + this._chartMain.margin.top + ')')
-
-    	// the x-axis
-    	let x = d3.scale.ordinal()
-    		.domain( data.map((d) => { return d[0] } ) )
-    		.rangeRoundBands([0 , width], 0.7, 0.3)
-
-    	let xAxis = d3.svg.axis()
-    		.scale(x)
-    		.orient('bottom')
-
-    	// the y-axis
-    	let y = d3.scale.linear()
-    		.domain([min, max])
-    		.range(
-          [
-            this._chartPos.top,
-            this._chartPos.bottom
-          ]
-        )
-
-    	let yAxis = d3.svg.axis()
-        .scale(y)
-        .orient('left')
-
-    	// draw the boxplots
-    	this._chart.selectAll('.boxplot')
-        .data(data)
-    	  .enter().append('g')
-    		.attr('transform', (d) => { return 'translate(' +  x(d[0])  + ',' + margin.top + ')' } )
-        .call(chart.width(x.rangeBand()))
-
-
-    	// add a title
-    	this._chart.append('text')
-        .attr('x', (width / 2))
-        .attr('y', 0 + (margin.top / 2))
-        .attr('text-anchor', 'middle')
-        .style('font-size', '18px')
-        //.style('text-decoration', 'underline')
-        .text('Revenue 2012')
-
-    	 // draw y axis
-    	this._chart.append('g')
-        .attr('class', 'y axis')
-        .call(yAxis)
-    		.append('text') // and text1
-  		  .attr('transform', 'rotate(-90)')
-  		  .attr('y', 6)
-  		  .attr('dy', '.71em')
-  		  .style('text-anchor', 'end')
-  		  .style('font-size', '16px')
-  		  .text('Revenue in €')
-
-    	// draw x axis
-    	this._chart.append('g')
-        .attr('class', 'x axis')
-        .attr('transform', 'translate(0,' + (height  + margin.top + 10) + ')')
-        .call(xAxis)
-    })
-
-    // Returns a function to compute the interquartile range.
-    function iqr(k) {
-      return function(d, i) {
-        let q1 = d.quartiles[0],
-            q3 = d.quartiles[2],
-            iqr = (q3 - q1) * k,
-            it = -1,
-            jt = d.length
-        while (d[++it] < q1 - iqr)
-        while (d[--jt] > q3 + iqr)
-        return [it, jt]
+        // For each value
+        for (let valueIdx = 0; valueIdx < values.length; valueIdx++)
+        {
+          let value = values[valueIdx]
+          if (value > max) max[datatypeIdx] = value
+      		if (value < min) min[datatypeIdx] = value
+        }
       }
     }
 
+    console.log(climateData)
+    console.log(min)
+    console.log(max)
+
+  	let chart = d3.boxplot()
+  		.whiskers(this._iqr(1.5))
+  		.height(this._chartPos.height*3)
+  		.domain([min[0], max[0]])
+  		.showLabels(false)
+
+  	// the x-axis
+  	let x = d3.scale.ordinal()
+  		.domain( climateData[0].map((d) => { return d[0] } ) )
+  		.rangeRoundBands([0 , this._chartPos.width], 0.7, 0.3)
+
+  	// draw the boxplots
+  	this._chart.selectAll('.boxplot')
+      .data(climateData[0])
+  	  .enter().append('g')
+      .attr('class', 'boxplot')
+  		.attr('transform', (d) =>
+        {
+          return (
+            'translate('
+              +  x(d[0])
+              + ','
+              + this._chartMain.margin.top
+              + ')'
+          )
+        }
+      )
+      .call(chart.width(x.rangeBand()))
   }
+
+
+  // ==========================================================================
+  // Compute the interquartile range (IQR)
+  // ==========================================================================
+
+  _iqr(k)
+  {
+    return (d) =>
+      {
+        let q1 = d.quartiles[0]
+        let q3 = d.quartiles[2]
+        let iqr = (q3 - q1) * k
+        let i = -1
+        let j = d.length
+        while (d[++i] < q1 - iqr)
+          while (d[--j] > q3 + iqr)
+            return [i, j]
+      }
+  }
+
 }
