@@ -1,8 +1,8 @@
 // ############################################################################
 // DistributionChart                                                       View
 // ############################################################################
-// Credits to: "Box Plots", Mike Bostock, access: 14.07.2017
-// https://bl.ocks.org/mbostock/4061502
+// Credits to: "Box Plots",Jens Grubert & Mike Bostock, access: 14.07.2017
+// http://bl.ocks.org/jensgrubert/7789216
 // ############################################################################
 
 class DistributionChart extends Chart
@@ -174,6 +174,7 @@ class DistributionChart extends Chart
 
   _drawChart()
   {
+
     // ------------------------------------------------------------------------
     // Prepare the data
     // Required format: array of arrays with data[d][m][2]
@@ -217,31 +218,28 @@ class DistributionChart extends Chart
         for (let valueIdx = 0; valueIdx < values.length; valueIdx++)
         {
           let value = values[valueIdx]
-          if (value > max) max[datatypeIdx] = value
-      		if (value < min) min[datatypeIdx] = value
+          if (value > max[datatypeIdx]) max[datatypeIdx] = value
+      		if (value < min[datatypeIdx]) min[datatypeIdx] = value
         }
       }
     }
-
-    console.log(climateData)
-    console.log(min)
-    console.log(max)
 
   	let chart = d3.boxplot()
   		.whiskers(this._iqr(1.5))
   		.height(this._chartPos.height*3)
   		.domain([min[0], max[0]])
-  		.showLabels(false)
 
-  	// the x-axis
-  	let x = d3.scale.ordinal()
-  		.domain( climateData[0].map((d) => { return d[0] } ) )
-  		.rangeRoundBands([0 , this._chartPos.width], 0.7, 0.3)
+  	// The x-axis
+  	let x = d3.scale
+      .ordinal()
+  		.domain(climateData[0].map((d) => { return d[0] } ))
+  		.rangeRoundBands([0 , this._chartPos.width], 0.8, 0.3)
 
-  	// draw the boxplots
+  	// Draw the boxplots
   	this._chart.selectAll('.boxplot')
       .data(climateData[0])
-  	  .enter().append('g')
+  	  .enter()
+      .append('g')
       .attr('class', 'boxplot')
   		.attr('transform', (d) =>
         {

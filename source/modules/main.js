@@ -215,6 +215,6 @@ for (let month of data.prec)
   data.prec_long.push(month.raw_data)
 
 // DRAW !!!
-new DistributionChart(main, data)
-new ClimateChart(main, data)
-new AvailabilityChart(main, data)
+// new DistributionChart(main, data)
+// new ClimateChart(main, data)
+// new AvailabilityChart(main, data)
