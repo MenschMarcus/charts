@@ -1,6 +1,6 @@
 // 0: Weimar
 // 1: Cherrapunjee
-const climateDataIdx = 0
+const climateDataIdx = 1
 
 // ############################################################################
 
@@ -141,6 +141,7 @@ let main =
             axesWidth:  2.0,  // [px]
             gridWidth:  0.5,  // [px]
           },
+          minMaxStretchFactor: 0.1,   // How much to stretch min/max values
           subcharts:
           [
             {
@@ -153,7 +154,7 @@ let main =
               data:       'prec',
               title:      "Distribution of Precipitation [mm]",
               color:      'rgb(4, 61, 186)',
-              maxRange:   [0, +1000]
+              maxRange:   [0, +2000]
             },
           ],
           switch:

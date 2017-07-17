@@ -111,7 +111,7 @@ class DistributionChart extends Chart
 
     // Level 1@_toolbar - dc-switch
     let dcSwitch = this._domElementCreator.create('div', 'dc-switch')
-    // this._toolbar.appendChild(dcSwitch)
+    this._toolbar.appendChild(dcSwitch)
 
     let switchLabel = this._domElementCreator.create(
       'label', null, ['switch-light', 'switch-candy'], [['onClick', '']]
@@ -169,8 +169,7 @@ class DistributionChart extends Chart
     $(switchOptions).click((e) =>
       {
         this._switchState = (this._switchState+1) % 2
-        // TODO
-        // this._drawChart()
+        this._drawChart()
       }
     )
 
@@ -193,6 +192,14 @@ class DistributionChart extends Chart
 
   _drawChart()
   {
+    // Clean charts
+    $('#boxplot-group').remove()
+
+    // Create boxplot group
+    let svg = this._chart
+      .append('g')
+      .attr('id', 'boxplot-group')
+
     // For each subchart
     for (let datatypeIdx = 0; datatypeIdx < this._numSubcharts; datatypeIdx++)
     {
@@ -233,15 +240,15 @@ class DistributionChart extends Chart
         }
       }
 
+      // Manipulation: extend min and max values to make the chart look better
+      let stretch = (vizMax - vizMin) * this._chartMain.minMaxStretchFactor
+      vizMin -= stretch
+      vizMax += stretch
 
-      // ------------------------------------------------------------------------
+
+      // ----------------------------------------------------------------------
       // Draw the visualization elements in the chart
-      // ------------------------------------------------------------------------
-
-      this._chart
-        .attr('class', 'boxplot')
-        .append('g')
-
+      // ----------------------------------------------------------------------
 
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       // x-Axis
@@ -257,7 +264,7 @@ class DistributionChart extends Chart
         .scale(xScale)
         .orient('bottom')
 
-      this._chart.append('g')
+      svg.append('g')
         .attr('class', 'x axis')
         .attr('transform', 'translate('
           + this._chartPos[datatypeIdx].left
@@ -270,16 +277,20 @@ class DistributionChart extends Chart
 
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       // y-Axis
+      // -> 2 switch state modi:
+      //  0: automatic  - adapt scale to data values and distribute perfectly
+      //  1: fixed      - always the same scale to make charts comparable
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+      let yDomain = null
+      if (this._switchState == 0) //  => automatic
+        yDomain = [vizMin, vizMax]
+      else // switchState == 1        => fixed
+        yDomain = this._chartMain.subcharts[datatypeIdx].maxRange
 
       let yScale = d3.scale
         .linear()
-        .domain(
-          [
-            vizMin,
-            vizMax
-          ]
-        )
+        .domain(yDomain)
         .range(
           [
             this._chartPos[datatypeIdx].bottom,
@@ -292,7 +303,7 @@ class DistributionChart extends Chart
         .scale(yScale)
         .orient('left')
 
-      this._chart.append('g')
+      svg.append('g')
         .attr('class', 'y axis')
         .attr('transform', 'translate('
           + this._chartPos[datatypeIdx].left
@@ -305,7 +316,7 @@ class DistributionChart extends Chart
 
       // Styling
 
-      this._chart.selectAll('.axis .domain')
+      svg.selectAll('.axis .domain')
       	.style('fill', 'none')
       	.style('stroke', 'black')
       	.style('stroke-width', this._chartMain.style.axesWidth + 'px')
@@ -329,7 +340,7 @@ class DistributionChart extends Chart
       	.tickPadding(5)
       	.tickFormat('')
 
-      this._chart.append('svg:g')
+      svg.append('svg:g')
         .attr('class', 'grid')
         .attr('transform', 'translate('
           + this._chartPos[datatypeIdx].left
@@ -350,7 +361,7 @@ class DistributionChart extends Chart
       	.orient('left')
       	.tickFormat('')
 
-      this._chart.append('svg:g')
+      svg.append('svg:g')
         .attr('class', 'grid')
         .attr('transform','translate('
           + this._chartPos[datatypeIdx].left
@@ -363,7 +374,7 @@ class DistributionChart extends Chart
 
       // Styling
 
-      this._chart.selectAll('.grid')
+      svg.selectAll('.grid')
         .style('fill', 'none')
         .style('stroke', this._chartsMain.colors.grid)
         .style('stroke-width', this._chartMain.style.gridWidth + ' px')
@@ -377,15 +388,10 @@ class DistributionChart extends Chart
       let boxplots = d3.boxplot()
         .whiskers(this._iqr(1.5))
         .height(this._chartPos[datatypeIdx].height)
-        .domain(
-          [
-            vizMin,
-            vizMax
-          ]
-        )
+        .domain(yDomain)
         .showLabels(false)
 
-      this._chart.selectAll('.boxplot')
+      svg.selectAll('.boxplot')
         .data(vizData)
         .enter()
         .append('g')
@@ -409,7 +415,7 @@ class DistributionChart extends Chart
       // Title
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-      this._chart.append('text')
+      svg.append('text')
         .attr('x', 0
           + this._chartPos[datatypeIdx].left
           + (this._chartPos[datatypeIdx].width / 2)
@@ -421,7 +427,6 @@ class DistributionChart extends Chart
         .attr('text-anchor', 'middle')
         .style('font-size', this._chartsMain.fontSizes.title + 'px')
         .text(this._chartMain.subcharts[datatypeIdx].title)
-
 
     }
   }
