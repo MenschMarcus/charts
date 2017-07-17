@@ -111,7 +111,7 @@ class DistributionChart extends Chart
 
     // Level 1@_toolbar - dc-switch
     let dcSwitch = this._domElementCreator.create('div', 'dc-switch')
-    this._toolbar.appendChild(dcSwitch)
+    // this._toolbar.appendChild(dcSwitch)
 
     let switchLabel = this._domElementCreator.create(
       'label', null, ['switch-light', 'switch-candy'], [['onClick', '']]
@@ -303,20 +303,71 @@ class DistributionChart extends Chart
         .call(yAxis)
 
 
+      // Styling
+
+      this._chart.selectAll('.axis .domain')
+      	.style('fill', 'none')
+      	.style('stroke', 'black')
+      	.style('stroke-width', this._chartMain.style.axesWidth + 'px')
+      	.attr('shape-rendering', 'crispEdges');
+
+
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      // For temp: Get 0-grid line
+      // Grid lines
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-      if (vizMin < 0)
-      {
-        this._chart.append('line')
-          .attr('x1', this._chartPos[datatypeIdx].left)
-          .attr('y1', yScale(0))
-          .attr('x2', this._chartPos[datatypeIdx].right)
-          .attr('y2', yScale(0))
-          .attr('shape-rendering', 'crispEdges')
-          .style('stroke', this._chartsMain.colors.grid)
-      }
+      // x-Direction
+
+      let xGrid = d3.svg
+      	.axis()
+      	.scale(xScale)
+      	.tickSize(0
+          + this._chartPos[datatypeIdx].top
+          - this._chartPos[datatypeIdx].bottom
+        )
+      	.tickSubdivide(true)
+      	.tickPadding(5)
+      	.tickFormat('')
+
+      this._chart.append('svg:g')
+        .attr('class', 'grid')
+        .attr('transform', 'translate('
+          + this._chartPos[datatypeIdx].left
+          + ','
+          + this._chartPos[datatypeIdx].bottom
+          + ')'
+        )
+        .call(xGrid)
+
+      // y-Direction
+
+      let yGrid = d3.svg
+      	.axis()
+      	.scale(yScale)
+      	.tickSize(0
+          - this._chartPos[datatypeIdx].width
+        )
+      	.orient('left')
+      	.tickFormat('')
+
+      this._chart.append('svg:g')
+        .attr('class', 'grid')
+        .attr('transform','translate('
+          + this._chartPos[datatypeIdx].left
+          + ','
+          + 0
+          + ')'
+        )
+        .call(yGrid)
+
+
+      // Styling
+
+      this._chart.selectAll('.grid')
+        .style('fill', 'none')
+        .style('stroke', this._chartsMain.colors.grid)
+        .style('stroke-width', this._chartMain.style.gridWidth + ' px')
+        .attr('shape-rendering', 'crispEdges')
 
 
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -348,6 +399,7 @@ class DistributionChart extends Chart
             )
           }
         )
+        .style('font-size', this._chartsMain.fontSizes.subtitle)
         .style('fill', this._chartMain.subcharts[datatypeIdx].color)
         .style('opacity', this._chartMain.style.boxOpacity)
         .call(boxplots.width(xScale.rangeBand()))
@@ -369,6 +421,7 @@ class DistributionChart extends Chart
         .attr('text-anchor', 'middle')
         .style('font-size', this._chartsMain.fontSizes.title + 'px')
         .text(this._chartMain.subcharts[datatypeIdx].title)
+
 
     }
   }

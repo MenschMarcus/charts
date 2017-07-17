@@ -1,15 +1,11 @@
-
-body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
 .boxplot {
   font: 10px sans-serif;
 }
 
-.boxplot line,
-.boxplot rect,
-.boxplot circle {
+.boxplot-line,
+.boxplot-rect,
+.boxplot-circle
+{
   stroke: #000;
   stroke-width: 1px;
 }
@@ -38,8 +34,6 @@ body {
   stroke: #000;
   shape-rendering: crispEdges;
 }
-
-
 
 /* SCALE SWITCH */
 

@@ -45,10 +45,10 @@ let main =
       },
       fontSizes:    // [px]
       {
-        basic:          13,
+        basic:          12,
         title:          16,
         subtitle:       13,
-        source:         12,
+        source:         11,
       },
       padding:          5,
       colors:
@@ -75,6 +75,14 @@ let main =
             right:        30,
             bottom:       10,
           },
+          style:
+          {
+            tickSize:       5,
+            gridWidth:      1,
+            axesWidth:      2,
+            lineWidth:      1.5,  // Lines for prec and temp
+            areaOpacity:    0.7,  // For the areas between prec/temp lines
+          },
           fontSizes:      // [px]
           {
             tick:         13,
@@ -94,14 +102,6 @@ let main =
             caption:        "Temperature Mean",
             unit:           "°C",
             dist:            10,  // Distance between two ticks
-          },
-          chart:
-          {
-            tickSize:       5,
-            gridWidth:      1,
-            axesWidth:      2,
-            lineWidth:      1.5,  // Lines for prec and temp
-            areaOpacity:    0.7,  // For the areas between prec/temp lines
           },
           table:
           {
@@ -138,6 +138,8 @@ let main =
           style:
           {
             boxOpacity: 0.7,  // For the boxplots
+            axesWidth:  2.0,  // [px]
+            gridWidth:  0.5,  // [px]
           },
           subcharts:
           [

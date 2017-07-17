@@ -291,7 +291,7 @@ class ClimateChart extends Chart
     let xAxis = d3.svg
       .axis()
       .scale(xScale)
-      .tickSize(this._chartMain.chart.tickSize)
+      .tickSize(this._chartMain.style.tickSize)
       .tickSubdivide(true)
       .tickPadding(5)
 
@@ -327,7 +327,7 @@ class ClimateChart extends Chart
       .axis()
       .scale(yScaleTempBelowBreak)
       .tickValues(ticks.temp.values.belowBreak)
-      .tickSize(this._chartMain.chart.tickSize)
+      .tickSize(this._chartMain.style.tickSize)
       .orient('left')
 
     this._chart.append('svg:g')
@@ -364,7 +364,7 @@ class ClimateChart extends Chart
       .axis()
       .scale(yScaleTempAboveBreak)
       .tickValues(ticks.temp.values.aboveBreak)
-      .tickSize(this._chartMain.chart.tickSize)
+      .tickSize(this._chartMain.style.tickSize)
       .orient('left')
 
     this._chart.append('svg:g')
@@ -400,7 +400,7 @@ class ClimateChart extends Chart
       .axis()
       .scale(yScalePrecBelowBreak)
       .tickValues(ticks.prec.values.belowBreak)
-      .tickSize(this._chartMain.chart.tickSize)
+      .tickSize(this._chartMain.style.tickSize)
       .orient('right')
 
     this._chart.append('svg:g')
@@ -436,7 +436,7 @@ class ClimateChart extends Chart
       .axis()
       .scale(yScalePrecAboveBreak)
       .tickValues(ticks.prec.values.aboveBreak)
-      .tickSize(this._chartMain.chart.tickSize)
+      .tickSize(this._chartMain.style.tickSize)
       .orient('right')
 
     this._chart.append('svg:g')
@@ -476,7 +476,7 @@ class ClimateChart extends Chart
     this._chart.selectAll('.axis .domain')
     	.style('fill', 'none')
     	.style('stroke', 'black')
-    	.style('stroke-width', this._chartMain.chart.axesWidth + 'px')
+    	.style('stroke-width', this._chartMain.style.axesWidth + 'px')
     	.attr('shape-rendering', 'crispEdges');
 
     this._chart.selectAll('.tick')
@@ -497,13 +497,13 @@ class ClimateChart extends Chart
     	.scale(xScale)
     	.tickSize(this._chartPos.top - this._chartPos.bottom)
     	.tickSubdivide(true)
-    	.tickPadding(5)
     	.tickFormat('')
 
     this._chart.append('svg:g')
       .attr('class', 'grid')
       .attr('transform', 'translate('
-        + '0,'
+        + 0
+        + ','
         + this._chartPos.bottom
         + ')'
       )
@@ -524,7 +524,9 @@ class ClimateChart extends Chart
       .attr('class', 'grid')
       .attr('transform','translate('
         + this._chartPos.left
-        + ',0)'
+        + ','
+        + 0
+        + ')'
       )
       .call(yGridBelowBreak)
 
@@ -545,7 +547,9 @@ class ClimateChart extends Chart
         .attr('class', 'grid')
         .attr('transform','translate('
           + this._chartPos.left
-          + ',0)'
+          + ','
+          + 0
+          + ')'
         )
         .call(yGridAboveBreak)
     }
@@ -555,7 +559,7 @@ class ClimateChart extends Chart
     this._chart.selectAll('.grid')
       .style('fill', 'none')
       .style('stroke', this._chartsMain.colors.grid)
-      .style('stroke-width', this._chartMain.chart.gridWidth + ' px')
+      .style('stroke-width', this._chartMain.style.gridWidth + ' px')
       .attr('shape-rendering', 'crispEdges')
 
 
@@ -567,8 +571,8 @@ class ClimateChart extends Chart
 
     let lineTemp = d3.svg
       .line()
-      .x( (d) => {return xScale(d.month)})
-      .y( (d) => {return yScaleTempBelowBreak(d.temp)})
+      .x( (d) => {return xScale(d.month)} )
+      .y( (d) => {return yScaleTempBelowBreak(d.temp)} )
       .interpolate('linear')
 
     this._chart.append('svg:path')
@@ -576,7 +580,7 @@ class ClimateChart extends Chart
       .attr('d', lineTemp(this._climateData.monthly_short))
       .attr('fill', 'none')
       .attr('stroke', this._chartsMain.colors.temp)
-      .attr('stroke-width', this._chartMain.chart.lineWidth)
+      .attr('stroke-width', this._chartMain.style.lineWidth)
 
 
     // Precipitation line below break
@@ -593,7 +597,7 @@ class ClimateChart extends Chart
       .attr('clip-path', 'url(#rect-bottom)')
       .attr('fill', 'none')
       .attr('stroke', this._chartsMain.colors.prec)
-      .attr('stroke-width', this._chartMain.chart.lineWidth)
+      .attr('stroke-width', this._chartMain.style.lineWidth)
 
 
     // Precipitation line abovebreak
@@ -611,7 +615,7 @@ class ClimateChart extends Chart
         .attr('clip-path', 'url(#rect-top)')
         .attr('fill', 'none')
         .attr('stroke', this._chartsMain.colors.prec)
-        .attr('stroke-width', this._chartMain.chart.lineWidth)
+        .attr('stroke-width', this._chartMain.style.lineWidth)
     }
 
 
@@ -733,7 +737,7 @@ class ClimateChart extends Chart
     // Styling
 
     this._chart.selectAll('.area')
-      .style('opacity', this._chartMain.chart.areaOpacity)
+      .style('opacity', this._chartMain.style.areaOpacity)
 
 
     // ------------------------------------------------------------------------
