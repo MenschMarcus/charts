@@ -127,7 +127,15 @@ let main =
 
         {
           name:           'distribution-chart',
-          subplots:
+          margin:         // [px]
+          {
+            left :      30,
+            top:        30,
+            right:      30,
+            bottom:     -30,
+            separator:  10,  // Distance between temp and prec subplots
+          },
+          subcharts:
           [
             {
               data:       'temp',
@@ -142,21 +150,6 @@ let main =
               maxRange:   [0, +1000]
             }
           ],
-          margin:         // [px]
-          {
-            left :      30,
-            top:        30,
-            right:      30,
-            bottom:     -30,
-            separator:  10,  // Distance between temp and prec subplots
-          },
-          height:       500,  // [px]
-          plotTitleTop: 85,   // [px] the subplot titles have to move up
-          style:
-          {
-            lineColor:  d3.rgb(150,150,150),  // grey
-            lineWidth:  1,  // [px]
-          },
           switch:
           {
             title:      "Y-Axis Scaling",

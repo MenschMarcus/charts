@@ -45,7 +45,7 @@ class DistributionChart extends Chart
     // ------------------------------------------------------------------------
 
     // Position values of actual distribution charts
-    // array, because 2 subplots
+    // array, because 2 subcharts
     // Pos from top, bottom, left, right and position of horizontal break bar
     this._chartPos =
     {
@@ -160,7 +160,7 @@ class DistributionChart extends Chart
     // ------------------------------------------------------------------------
     // Resize graph on window resize
     // -> this is the brute force method. It would be nicer to plot it only
-    // once and then to resize it, but that did not work since I used subplots.
+    // once and then to resize it, but that did not work cuz I used subcharts.
     // ------------------------------------------------------------------------
 
     // TODO
@@ -312,7 +312,7 @@ class DistributionChart extends Chart
             + ')'
         }
       )
-      .style('fill', this._chartMain.subplots[0].color)
+      .style('fill', this._chartMain.subcharts[0].color)
       .call(boxplots.width(xScale.rangeBand()))
 
 
@@ -329,7 +329,7 @@ class DistributionChart extends Chart
       )
       .attr('text-anchor', 'middle')
       .style('font-size', '15px')
-      .text(this._chartMain.subplots[0].title)
+      .text(this._chartMain.subcharts[0].title)
 
   }
 
