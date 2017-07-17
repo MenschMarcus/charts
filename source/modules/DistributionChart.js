@@ -52,11 +52,9 @@ class DistributionChart extends Chart
     // Pos from top, bottom, left, right and position of horizontal break bar
 
     let subplotWidth = (0
-      + this._mainPos.right
-      - this._chartMain.margin.right
-      - this._chartMain.margin.left
-      - this._mainPos.left
-    ) / this._numSubcharts
+        + this._mainPos.right
+        - this._mainPos.left
+      ) / this._numSubcharts
 
     this._chartPos = []
     for (let datatypeIdx = 0; datatypeIdx < this._numSubcharts; datatypeIdx++)
@@ -65,6 +63,7 @@ class DistributionChart extends Chart
       {
         left: ( 0
           + this._mainPos.left
+          + this._chartMain.margin.left
           + (datatypeIdx * subplotWidth)
           + this._chartsMain.padding
         ),
@@ -75,6 +74,7 @@ class DistributionChart extends Chart
         ),
         right: ( 0
           + this._mainPos.right
+          - this._chartMain.margin.right
           - (((this._numSubcharts-1)-datatypeIdx) * subplotWidth)
           - this._chartsMain.padding
         ),
@@ -91,8 +91,6 @@ class DistributionChart extends Chart
         + this._chartPos[datatypeIdx].bottom
         - this._chartPos[datatypeIdx].top
     }
-
-    console.log(this._chartPos);
 
 
     // ------------------------------------------------------------------------
@@ -171,7 +169,6 @@ class DistributionChart extends Chart
     $(switchOptions).click((e) =>
       {
         this._switchState = (this._switchState+1) % 2
-        console.log(this._switchState)
         // TODO
         // this._drawChart()
       }
@@ -196,160 +193,167 @@ class DistributionChart extends Chart
 
   _drawChart()
   {
-
-    // ------------------------------------------------------------------------
-    // Prepare the data
-    // Required format: array of arrays with data[d][m][2]
-    //    d =               number of data types (2)
-    //    m =               number of months (12)
-    //    data[i][j][0] =   name of the ith column (month + data type)
-    //    data[i][j][1] =   array of values for this month
-    // ------------------------------------------------------------------------
-
-    // Get climate data and min/max values (0: temp, 1: prec)
-    let vizData = []
-    let vizMin = []
-    let vizMax = []
-
-    // For each data type (temp and prec)
+    // For each subchart
     for (let datatypeIdx = 0; datatypeIdx < this._numSubcharts; datatypeIdx++)
     {
-      // Create empty arrays
-      vizData[datatypeIdx] = []
-      vizMin[datatypeIdx] = +Infinity
-      vizMax[datatypeIdx] = -Infinity
+      // ----------------------------------------------------------------------
+      // Prepare the data
+      // Required format: array of arrays with data[m][2]
+      //    m =            number of months (12)
+      //    data[i][0] =   name of the ith column (month + data type)
+      //    data[i][1] =   array of values for this month
+      // ----------------------------------------------------------------------
+
+      // Get climate data and min/max values (0: temp, 1: prec)
+      let vizData = []
+      let vizMin = +Infinity
+      let vizMax = -Infinity
 
       // For each month
       for (let monthIdx = 0; monthIdx < MONTHS_IN_YEAR.length; monthIdx++)
       {
         // Create empty array
-        vizData[datatypeIdx][monthIdx] = []
+        vizData[monthIdx] = []
 
         // Name month
-        vizData[datatypeIdx][monthIdx][0] = MONTHS_IN_YEAR[monthIdx]
+        vizData[monthIdx][0] = MONTHS_IN_YEAR[monthIdx]
 
         // Get data values
         let values = this._climateData
           [this._chartMain.subcharts[datatypeIdx].data + '_long']
           [monthIdx]
-        vizData[datatypeIdx][monthIdx][1] = values
+        vizData[monthIdx][1] = values
 
         // For each value
         for (let valueIdx = 0; valueIdx < values.length; valueIdx++)
         {
           let value = values[valueIdx]
-          if (value > vizMax[datatypeIdx]) vizMax[datatypeIdx] = value
-      		if (value < vizMin[datatypeIdx]) vizMin[datatypeIdx] = value
+          if (value > vizMax) vizMax = value
+      		if (value < vizMin) vizMin = value
         }
       }
+
+
+      // ------------------------------------------------------------------------
+      // Draw the visualization elements in the chart
+      // ------------------------------------------------------------------------
+
+      this._chart
+        .attr('class', 'boxplot')
+        .append('g')
+
+
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      // x-Axis
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+      let xScale = d3.scale
+        .ordinal()
+        .domain(MONTHS_IN_YEAR)
+        .rangeRoundBands([0 , this._chartPos[datatypeIdx].width], 0.7, 0.3)
+
+      let xAxis = d3.svg
+        .axis()
+        .scale(xScale)
+        .orient('bottom')
+
+      this._chart.append('g')
+        .attr('class', 'x axis')
+        .attr('transform', 'translate('
+          + this._chartPos[datatypeIdx].left
+          + ','
+          + this._chartPos[datatypeIdx].bottom
+          + ')'
+        )
+        .call(xAxis)
+
+
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      // y-Axis
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+      let yScale = d3.scale
+        .linear()
+        .domain(
+          [
+            vizMin,
+            vizMax
+          ]
+        )
+        .range(
+          [
+            this._chartPos[datatypeIdx].bottom,
+            this._chartPos[datatypeIdx].top
+          ]
+        )
+
+      let yAxis = d3.svg
+        .axis()
+        .scale(yScale)
+        .orient('left')
+
+      this._chart.append('g')
+        .attr('class', 'y axis')
+        .attr('transform', 'translate('
+          + this._chartPos[datatypeIdx].left
+          + ','
+          + 0
+          + ')'
+        )
+        .call(yAxis)
+
+
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      // Boxplots
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+      let boxplots = d3.boxplot()
+        .whiskers(this._iqr(1.5))
+        .height(this._chartPos[datatypeIdx].height)
+        .domain(
+          [
+            vizMin,
+            vizMax
+          ]
+        )
+        .showLabels(false)
+
+      this._chart.selectAll('.boxplot')
+        .data(vizData)
+        .enter()
+        .append('g')
+        .attr('transform', (d) =>
+          {
+            return ('translate('
+              + (xScale(d[0]) + this._chartPos[datatypeIdx].left)
+              + ','
+              + this._chartPos[datatypeIdx].top
+              + ')'
+            )
+          }
+        )
+        .style('fill', this._chartMain.subcharts[datatypeIdx].color)
+        .call(boxplots.width(xScale.rangeBand()))
+
+
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      // Title
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+      this._chart.append('text')
+        .attr('x', 0
+          + this._chartPos[datatypeIdx].left
+          + (this._chartPos[datatypeIdx].width / 2)
+        )
+        .attr('y', 0
+          + this._chartPos[datatypeIdx].top
+          - this._chartMain.margin.top
+        )
+        .attr('text-anchor', 'middle')
+        .style('font-size', this._chartsMain.fontSizes.title + 'px')
+        .text(this._chartMain.subcharts[datatypeIdx].title)
+
     }
-
-
-    // ------------------------------------------------------------------------
-    // Draw the visualization elements in the chart
-    // ------------------------------------------------------------------------
-
-  	this._chart
-  		.attr('class', 'boxplot')
-  		.append('g')
-
-
-  	// x-Axis
-
-  	let xScale = d3.scale
-      .ordinal()
-  		.domain(MONTHS_IN_YEAR)
-  		.rangeRoundBands([0 , this._chartPos[0].width], 0.7, 0.3)
-
-  	let xAxis = d3.svg
-      .axis()
-  		.scale(xScale)
-  		.orient('bottom')
-
-    this._chart.append('g')
-      .attr('class', 'x axis')
-      .attr('transform', 'translate('
-        + this._chartPos[0].left
-        + ','
-        + this._chartPos[0].bottom
-        + ')'
-      )
-      .call(xAxis)
-
-
-  	// y-Axis
-
-  	let yScale = d3.scale
-      .linear()
-  		.domain(
-        [
-          vizMin[0],
-          vizMax[0]
-        ]
-      )
-  		.range(
-        [
-          this._chartPos[0].bottom,
-          this._chartPos[0].top
-        ]
-      )
-
-  	let yAxis = d3.svg
-      .axis()
-      .scale(yScale)
-      .orient('left')
-
-    this._chart.append('g')
-      .attr('class', 'y axis')
-      .attr('transform', 'translate('
-        + this._chartPos[0].left
-        + ','
-        + 0
-        + ')'
-      )
-      .call(yAxis)
-
-
-  	// Boxplots
-
-    let boxplots = d3.boxplot()
-  		.whiskers(this._iqr(1.5))
-  		.height(this._chartPos[0].height)
-  		.domain([vizMin[0], vizMax[0]])
-  		.showLabels(false)
-
-  	this._chart.selectAll('.boxplot')
-      .data(vizData[0])
-  	  .enter()
-      .append('g')
-  		.attr('transform', (d) =>
-        {
-          return 'translate('
-            + (xScale(d[0]) + this._chartPos[0].left)
-            + ','
-            + this._chartPos[0].top
-            + ')'
-        }
-      )
-      .style('fill', this._chartMain.subcharts[0].color)
-      .call(boxplots.width(xScale.rangeBand()))
-
-
-  	// Title
-
-  	this._chart.append('text')
-      .attr('x', 0
-        + this._chartPos[0].left
-        + (this._chartPos[0].width / 2)
-      )
-      .attr('y', 0
-        + this._chartPos[0].top
-        - this._chartMain.margin.top
-      )
-      .attr('text-anchor', 'middle')
-      .style('font-size', '15px')
-      .text(this._chartMain.subcharts[0].title)
-
   }
 
 
