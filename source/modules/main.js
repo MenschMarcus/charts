@@ -135,6 +135,10 @@ let main =
             bottom:     -30,
             separator:  10,  // Distance between temp and prec subplots
           },
+          style:
+          {
+            boxOpacity: 0.7,  // For the boxplots
+          },
           subcharts:
           [
             {
@@ -209,5 +213,5 @@ for (let month of data.prec)
 
 // DRAW !!!
 new DistributionChart(main, data)
-// new ClimateChart(main, data)
-// new AvailabilityChart(main, data)
+new ClimateChart(main, data)
+new AvailabilityChart(main, data)

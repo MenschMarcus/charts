@@ -304,6 +304,22 @@ class DistributionChart extends Chart
 
 
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      // For temp: Get 0-grid line
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+      if (vizMin < 0)
+      {
+        this._chart.append('line')
+          .attr('x1', this._chartPos[datatypeIdx].left)
+          .attr('y1', yScale(0))
+          .attr('x2', this._chartPos[datatypeIdx].right)
+          .attr('y2', yScale(0))
+          .attr('shape-rendering', 'crispEdges')
+          .style('stroke', this._chartsMain.colors.grid)
+      }
+
+
+      // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       // Boxplots
       // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -333,6 +349,7 @@ class DistributionChart extends Chart
           }
         )
         .style('fill', this._chartMain.subcharts[datatypeIdx].color)
+        .style('opacity', this._chartMain.style.boxOpacity)
         .call(boxplots.width(xScale.rangeBand()))
 
 
