@@ -39,6 +39,9 @@ class DistributionChart extends Chart
     // Initial switch state -> must be 0 !!!
     this._switchState = 0
 
+    // Number of subcharts (should be 2 -> temp and prec)
+    this._numSubcharts = this._chartMain.subcharts.length
+
 
     // ------------------------------------------------------------------------
     // Preparation: Position values for visualization elements
@@ -47,31 +50,49 @@ class DistributionChart extends Chart
     // Position values of actual distribution charts
     // array, because 2 subcharts
     // Pos from top, bottom, left, right and position of horizontal break bar
-    this._chartPos =
+
+    let subplotWidth = (0
+      + this._mainPos.right
+      - this._chartMain.margin.right
+      - this._chartMain.margin.left
+      - this._mainPos.left
+    ) / this._numSubcharts
+
+    this._chartPos = []
+    for (let datatypeIdx = 0; datatypeIdx < this._numSubcharts; datatypeIdx++)
     {
-      left: ( 0
-        + this._mainPos.left
-        + this._chartsMain.padding
-        + this._chartMain.margin.left
-      ),
-      top: ( 0
-        + this._mainPos.top
-        + this._chartsMain.padding
-        + this._chartMain.margin.top
-      ),
-      right: ( 0
-        + this._mainPos.right
-        - this._chartsMain.padding
-        - this._chartMain.margin.right
-      ),
-      bottom: ( 0
-        + this._mainPos.bottom
-        - this._chartsMain.padding
-        - this._chartMain.margin.bottom
-      ),
+      this._chartPos[datatypeIdx] =
+      {
+        left: ( 0
+          + this._mainPos.left
+          + (datatypeIdx * subplotWidth)
+          + this._chartsMain.padding
+        ),
+        top: ( 0
+          + this._mainPos.top
+          + this._chartsMain.padding
+          + this._chartMain.margin.top
+        ),
+        right: ( 0
+          + this._mainPos.right
+          - (((this._numSubcharts-1)-datatypeIdx) * subplotWidth)
+          - this._chartsMain.padding
+        ),
+        bottom: ( 0
+          + this._mainPos.bottom
+          - this._chartsMain.padding
+          - this._chartMain.margin.bottom
+        ),
+      }
+      this._chartPos[datatypeIdx].width = 0
+        + this._chartPos[datatypeIdx].right
+        - this._chartPos[datatypeIdx].left
+      this._chartPos[datatypeIdx].height = 0
+        + this._chartPos[datatypeIdx].bottom
+        - this._chartPos[datatypeIdx].top
     }
-    this._chartPos.width =  this._chartPos.right -  this._chartPos.left
-    this._chartPos.height = this._chartPos.bottom - this._chartPos.top
+
+    console.log(this._chartPos);
 
 
     // ------------------------------------------------------------------------
@@ -191,7 +212,7 @@ class DistributionChart extends Chart
     let vizMax = []
 
     // For each data type (temp and prec)
-    for (let datatypeIdx = 0; datatypeIdx <= 1; datatypeIdx++)
+    for (let datatypeIdx = 0; datatypeIdx < this._numSubcharts; datatypeIdx++)
     {
       // Create empty arrays
       vizData[datatypeIdx] = []
@@ -208,11 +229,9 @@ class DistributionChart extends Chart
         vizData[datatypeIdx][monthIdx][0] = MONTHS_IN_YEAR[monthIdx]
 
         // Get data values
-        let values = null
-        if (datatypeIdx == 0)       // Temp
-          values = this._climateData.temp_long[monthIdx]
-        else if (datatypeIdx == 1)  // Prec
-          values = this._climateData.prec_long[monthIdx]
+        let values = this._climateData
+          [this._chartMain.subcharts[datatypeIdx].data + '_long']
+          [monthIdx]
         vizData[datatypeIdx][monthIdx][1] = values
 
         // For each value
@@ -240,7 +259,7 @@ class DistributionChart extends Chart
   	let xScale = d3.scale
       .ordinal()
   		.domain(MONTHS_IN_YEAR)
-  		.rangeRoundBands([0 , this._chartPos.width], 0.7, 0.3)
+  		.rangeRoundBands([0 , this._chartPos[0].width], 0.7, 0.3)
 
   	let xAxis = d3.svg
       .axis()
@@ -250,9 +269,9 @@ class DistributionChart extends Chart
     this._chart.append('g')
       .attr('class', 'x axis')
       .attr('transform', 'translate('
-        + this._chartPos.left
+        + this._chartPos[0].left
         + ','
-        + this._chartPos.bottom
+        + this._chartPos[0].bottom
         + ')'
       )
       .call(xAxis)
@@ -270,8 +289,8 @@ class DistributionChart extends Chart
       )
   		.range(
         [
-          this._chartPos.bottom,
-          this._chartPos.top
+          this._chartPos[0].bottom,
+          this._chartPos[0].top
         ]
       )
 
@@ -283,7 +302,7 @@ class DistributionChart extends Chart
     this._chart.append('g')
       .attr('class', 'y axis')
       .attr('transform', 'translate('
-        + this._chartPos.left
+        + this._chartPos[0].left
         + ','
         + 0
         + ')'
@@ -295,7 +314,7 @@ class DistributionChart extends Chart
 
     let boxplots = d3.boxplot()
   		.whiskers(this._iqr(1.5))
-  		.height(this._chartPos.height)
+  		.height(this._chartPos[0].height)
   		.domain([vizMin[0], vizMax[0]])
   		.showLabels(false)
 
@@ -306,9 +325,9 @@ class DistributionChart extends Chart
   		.attr('transform', (d) =>
         {
           return 'translate('
-            + (xScale(d[0]) + this._chartPos.left)
+            + (xScale(d[0]) + this._chartPos[0].left)
             + ','
-            + this._chartPos.top
+            + this._chartPos[0].top
             + ')'
         }
       )
@@ -320,11 +339,11 @@ class DistributionChart extends Chart
 
   	this._chart.append('text')
       .attr('x', 0
-        + this._chartPos.left
-        + (this._chartPos.width / 2)
+        + this._chartPos[0].left
+        + (this._chartPos[0].width / 2)
       )
       .attr('y', 0
-        + this._chartPos.top
+        + this._chartPos[0].top
         - this._chartMain.margin.top
       )
       .attr('text-anchor', 'middle')
