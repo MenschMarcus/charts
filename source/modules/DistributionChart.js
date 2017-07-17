@@ -44,7 +44,8 @@ class DistributionChart extends Chart
     // Preparation: Position values for visualization elements
     // ------------------------------------------------------------------------
 
-    // Position values of actual climate chart
+    // Position values of actual distribution charts
+    // array, because 2 subplots
     // Pos from top, bottom, left, right and position of horizontal break bar
     this._chartPos =
     {
@@ -292,7 +293,7 @@ class DistributionChart extends Chart
 
   	// Boxplots
 
-    let chart = d3.boxplot()
+    let boxplots = d3.boxplot()
   		.whiskers(this._iqr(1.5))
   		.height(this._chartPos.height)
   		.domain([vizMin[0], vizMax[0]])
@@ -311,7 +312,8 @@ class DistributionChart extends Chart
             + ')'
         }
       )
-      .call(chart.width(xScale.rangeBand()))
+      .style('fill', this._chartMain.subplots[0].color)
+      .call(boxplots.width(xScale.rangeBand()))
 
 
   	// Title
@@ -327,7 +329,7 @@ class DistributionChart extends Chart
       )
       .attr('text-anchor', 'middle')
       .style('font-size', '15px')
-      .text("Temperature")
+      .text(this._chartMain.subplots[0].title)
 
   }
 

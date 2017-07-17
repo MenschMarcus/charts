@@ -10,7 +10,6 @@ body {
 .boxplot line,
 .boxplot rect,
 .boxplot circle {
-  fill: steelblue;
   stroke: #000;
   stroke-width: 1px;
 }
@@ -20,7 +19,6 @@ body {
 }
 
 .boxplot .outlier {
-  fill: none;
   stroke: #000;
 }
 
