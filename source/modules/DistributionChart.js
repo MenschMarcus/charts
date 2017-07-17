@@ -185,26 +185,26 @@ class DistributionChart extends Chart
     // ------------------------------------------------------------------------
 
     // Get climate data and min/max values (0: temp, 1: prec)
-    let climateData = []
-    let min = []
-    let max = []
+    let vizData = []
+    let vizMin = []
+    let vizMax = []
 
     // For each data type (temp and prec)
-    for (let datatypeIdx = 0; datatypeIdx < 2; datatypeIdx++)
+    for (let datatypeIdx = 0; datatypeIdx <= 1; datatypeIdx++)
     {
       // Create empty arrays
-      climateData[datatypeIdx] = []
-      min[datatypeIdx] = +Infinity
-      max[datatypeIdx] = -Infinity
+      vizData[datatypeIdx] = []
+      vizMin[datatypeIdx] = +Infinity
+      vizMax[datatypeIdx] = -Infinity
 
       // For each month
       for (let monthIdx = 0; monthIdx < MONTHS_IN_YEAR.length; monthIdx++)
       {
         // Create empty array
-        climateData[datatypeIdx][monthIdx] = []
+        vizData[datatypeIdx][monthIdx] = []
 
         // Name month
-        climateData[datatypeIdx][monthIdx][0] = MONTHS_IN_YEAR[monthIdx]
+        vizData[datatypeIdx][monthIdx][0] = MONTHS_IN_YEAR[monthIdx]
 
         // Get data values
         let values = null
@@ -212,47 +212,123 @@ class DistributionChart extends Chart
           values = this._climateData.temp_long[monthIdx]
         else if (datatypeIdx == 1)  // Prec
           values = this._climateData.prec_long[monthIdx]
-        climateData[datatypeIdx][monthIdx][1] = values
+        vizData[datatypeIdx][monthIdx][1] = values
 
         // For each value
         for (let valueIdx = 0; valueIdx < values.length; valueIdx++)
         {
           let value = values[valueIdx]
-          if (value > max[datatypeIdx]) max[datatypeIdx] = value
-      		if (value < min[datatypeIdx]) min[datatypeIdx] = value
+          if (value > vizMax[datatypeIdx]) vizMax[datatypeIdx] = value
+      		if (value < vizMin[datatypeIdx]) vizMin[datatypeIdx] = value
         }
       }
     }
 
-  	let chart = d3.boxplot()
-  		.whiskers(this._iqr(1.5))
-  		.height(this._chartPos.height*3)
-  		.domain([min[0], max[0]])
 
-  	// The x-axis
-  	let x = d3.scale
+    // ------------------------------------------------------------------------
+    // Draw the visualization elements in the chart
+    // ------------------------------------------------------------------------
+
+  	this._chart
+  		.attr('class', 'boxplot')
+  		.append('g')
+
+
+  	// x-Axis
+
+  	let xScale = d3.scale
       .ordinal()
-  		.domain(climateData[0].map((d) => { return d[0] } ))
-  		.rangeRoundBands([0 , this._chartPos.width], 0.8, 0.3)
+  		.domain(MONTHS_IN_YEAR)
+  		.rangeRoundBands([0 , this._chartPos.width], 0.7, 0.3)
 
-  	// Draw the boxplots
+  	let xAxis = d3.svg
+      .axis()
+  		.scale(xScale)
+  		.orient('bottom')
+
+    this._chart.append('g')
+      .attr('class', 'x axis')
+      .attr('transform', 'translate('
+        + this._chartPos.left
+        + ','
+        + this._chartPos.bottom
+        + ')'
+      )
+      .call(xAxis)
+
+
+  	// y-Axis
+
+  	let yScale = d3.scale
+      .linear()
+  		.domain(
+        [
+          vizMin[0],
+          vizMax[0]
+        ]
+      )
+  		.range(
+        [
+          this._chartPos.bottom,
+          this._chartPos.top
+        ]
+      )
+
+  	let yAxis = d3.svg
+      .axis()
+      .scale(yScale)
+      .orient('left')
+
+    this._chart.append('g')
+      .attr('class', 'y axis')
+      .attr('transform', 'translate('
+        + this._chartPos.left
+        + ','
+        + 0
+        + ')'
+      )
+      .call(yAxis)
+
+
+  	// Boxplots
+
+    let chart = d3.boxplot()
+  		.whiskers(this._iqr(1.5))
+  		.height(this._chartPos.height)
+  		.domain([vizMin[0], vizMax[0]])
+  		.showLabels(false)
+
   	this._chart.selectAll('.boxplot')
-      .data(climateData[0])
+      .data(vizData[0])
   	  .enter()
       .append('g')
-      .attr('class', 'boxplot')
   		.attr('transform', (d) =>
         {
-          return (
-            'translate('
-              +  x(d[0])
-              + ','
-              + this._chartMain.margin.top
-              + ')'
-          )
+          return 'translate('
+            + (xScale(d[0]) + this._chartPos.left)
+            + ','
+            + this._chartPos.top
+            + ')'
         }
       )
-      .call(chart.width(x.rangeBand()))
+      .call(chart.width(xScale.rangeBand()))
+
+
+  	// Title
+
+  	this._chart.append('text')
+      .attr('x', 0
+        + this._chartPos.left
+        + (this._chartPos.width / 2)
+      )
+      .attr('y', 0
+        + this._chartPos.top
+        - this._chartMain.margin.top
+      )
+      .attr('text-anchor', 'middle')
+      .style('font-size', '15px')
+      .text("Temperature")
+
   }
 
 
@@ -269,9 +345,9 @@ class DistributionChart extends Chart
         let iqr = (q3 - q1) * k
         let i = -1
         let j = d.length
-        while (d[++i] < q1 - iqr)
-          while (d[--j] > q3 + iqr)
-            return [i, j]
+        while (d[++i] < q1 - iqr);
+        while (d[--j] > q3 + iqr);
+        return [i, j]
       }
   }
 

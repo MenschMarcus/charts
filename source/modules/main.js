@@ -1,14 +1,14 @@
 // 0: Weimar
 // 1: Cherrapunjee
-const climateDataIdx = 1
+const climateDataIdx = 0
 
 // ############################################################################
 
 const MONTHS_IN_YEAR =
-  [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-  ]
+[
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+]
 
 // ############################################################################
 
@@ -142,12 +142,12 @@ let main =
               maxRange:   [0, +1000]
             }
           ],
-          margin:       // [px]
+          margin:         // [px]
           {
             left :      30,
-            top:        100,
+            top:        30,
             right:      30,
-            bottom:     80,
+            bottom:     -30,
             separator:  10,  // Distance between temp and prec subplots
           },
           height:       500,  // [px]
@@ -215,6 +215,6 @@ for (let month of data.prec)
   data.prec_long.push(month.raw_data)
 
 // DRAW !!!
-// new DistributionChart(main, data)
+new DistributionChart(main, data)
 // new ClimateChart(main, data)
 // new AvailabilityChart(main, data)
