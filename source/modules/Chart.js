@@ -170,7 +170,6 @@ class Chart
       .attr('version', 1.1)
       .attr('xmlns', 'http://www.w3.org/2000/svg')
       .attr('width', '100%')
-      .attr('height', '1000px') // unreasonably high initial value for IE
       .attr('viewBox', ''
         + '0 0 '  + this._chartWidth
         + ' '     + this._chartHeight

@@ -54,7 +54,6 @@ class ClimateChart extends Chart
     this._chartPos.width =  this._chartPos.right - this._chartPos.left
     this._chartPos.height = this._chartPos.bottom - this._chartPos.top
 
-
     // Position values of table next to climate chart
     this._tablePos = {
       left: ( 0

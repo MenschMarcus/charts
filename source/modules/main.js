@@ -167,8 +167,8 @@ let main =
           {
             left:         50,
             top:          30,
-            right:        0,
-            bottom:       0,
+            right:        20,
+            bottom:       20,
           },
           style:
           {

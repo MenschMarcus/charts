@@ -323,6 +323,11 @@ class AvailabilityChart extends Chart
     // Resize whole container and footer
     super._resizeChartHeight(shiftUp);
 
+    // TODO: hack: shift footer up slightly
+    let oldY = this._chart.select('.footer').attr('y')
+    this._chart.select('.source').attr('y', oldY-10)
+    this._chart.select('.ref-url').attr('y', oldY-10)
+
     // Resize model:
     this._chartPos.bottom += shiftUp
   }
