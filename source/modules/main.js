@@ -3,7 +3,7 @@
 const climateDataIdx = 0
 
 // Initial width and height of chart wrapper
-$('#main-container').width(800)
+$('#main-container').width(900)
 
 // ############################################################################
 
