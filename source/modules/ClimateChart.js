@@ -948,26 +948,31 @@ class ClimateChart extends Chart
 
 
     // Event handling
-
-    this._chartWrapper.mouseover( (e) =>
+    let showCircles = () =>
       {
         this._chart.select('.focus')
           .attr('visibility', 'visible')
       }
-    )
 
-    this._chartWrapper.mouseout( (e) =>
+    let hideCircles = () =>
       {
         this._chart.select('.focus')
           .attr('visibility', 'hidden')
+      }
 
+    let defocusMonth = () =>
+      {
         this._chart.selectAll('.cell')
           .attr('fill', 'black')
           .attr('font-weight', 'normal')
           .style('font-size', this._chartsMain.fontSizes.large + 'em')
           .style('text-shadow', 'none')
       }
-    )
+
+    this._chartWrapper.mouseover(hideCircles)
+
+    this._chartWrapper.mouseout(hideCircles)
+    this._chartWrapper.mouseout(defocusMonth)
 
     this._chartWrapper.mousemove( (e) =>
       {
@@ -995,6 +1000,16 @@ class ClimateChart extends Chart
             xI = i
           }
         }
+
+        // Hack: for december, disable hover when far away
+        // faw away = further than half distance between two ticks + a bit more
+        if (lowDiff > ((tickPos[1]-tickPos[0])/2)*1.1)
+        {
+          hideCircles()
+          defocusMonth()
+          return
+        }
+        showCircles()
 
         let c1 =    this._chart.select('#c1')
         let c2 =    this._chart.select('#c2')
