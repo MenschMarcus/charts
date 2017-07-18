@@ -33,7 +33,8 @@ class Chart
       if (chart.name == chartName)
         this._chartMain = chart
 
-    // Copy height of the chart, to never override main
+    // Copy width and height of the chart, to never override main
+    this._chartWidth =  this._chartsMain.positions.width
     this._chartHeight = this._chartsMain.positions.height
 
     // Actual chart data
@@ -143,7 +144,7 @@ class Chart
       )
     parentContainer.append(chartWrapper)
     this._chartWrapper = $('#' + this._chartMain.name + '-wrapper')
-    this._chartWrapper.css('width', this._chartsMain.positions.width)
+    this._chartWrapper.css('width', this._chartWidth)
     this._chartWrapper.css('height', this._chartHeight)
 
     // Add toolbar container
@@ -162,11 +163,10 @@ class Chart
       .attr('version', 1.1)
       .attr('xmlns', 'http://www.w3.org/2000/svg')
       .attr('preserveAspectRatio', 'xMinYMin meet')
-      .attr('width', this._chartsMain.positions.width)
+      .attr('width', this._chartWidth)
       .attr('height', this._chartHeight)
-      // Do not use viewBox, since it incorporates a new coordinate systems
       // .attr('viewBox', ''
-      //   + '0 0 '  + this._chartsMain.positions.width
+      //   + '0 0 '  + this._chartWidth
       //   + ' '     + this._chartHeight
       // )
       .classed('svg-content-responsive', true)
@@ -186,7 +186,7 @@ class Chart
         + this._chartsMain.positions.main.top
       ),
       right : ( 0
-        + this._chartsMain.positions.width
+        + this._chartWidth
       ),
       bottom : ( 0
         + this._chartHeight
@@ -215,7 +215,7 @@ class Chart
     this._chart.append('text')
       .attr('id', this._chartName + '-title')
       .attr('class', 'chart-header chart-title')
-      .attr('x', this._chartsMain.positions.width/2)
+      .attr('x', this._chartWidth/2)
       .attr('y', 0
         + this._chartsMain.positions.title.top
         + this._chartsMain.padding
@@ -227,7 +227,7 @@ class Chart
     // Subtitle
     this._chart.append('text')
       .attr('class', 'chart-header chart-subtitle')
-      .attr('x', this._chartsMain.positions.width/2)
+      .attr('x', this._chartWidth/2)
       .attr('y', 0
         + this._chartsMain.positions.subtitle.top
         + this._chartsMain.padding
@@ -259,7 +259,7 @@ class Chart
       .append('tspan')
       .attr('class', 'source')
       .attr('x', 0
-        + this._chartsMain.positions.width
+        + this._chartWidth
         - this._chartsMain.padding
       )
       .attr('y', 0

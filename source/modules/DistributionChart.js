@@ -245,6 +245,10 @@ class DistributionChart extends Chart
       vizMin -= stretch
       vizMax += stretch
 
+      // For prec: clip min to zero
+      if (this._chartMain.subcharts[datatypeIdx].data == 'prec')
+        vizMin = Math.max(vizMin, 0)
+
 
       // ----------------------------------------------------------------------
       // Draw the visualization elements in the chart

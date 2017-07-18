@@ -1,6 +1,6 @@
 // 0: Weimar
 // 1: Cherrapunjee
-const climateDataIdx = 1
+const climateDataIdx = 0
 
 // ############################################################################
 
@@ -133,7 +133,6 @@ let main =
             top:        30,
             right:      30,
             bottom:     -30,
-            separator:  10,  // Distance between temp and prec subplots
           },
           style:
           {
