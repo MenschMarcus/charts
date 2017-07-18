@@ -162,13 +162,13 @@ class Chart
       .attr('id', this._chartMain.name)
       .attr('version', 1.1)
       .attr('xmlns', 'http://www.w3.org/2000/svg')
-      .attr('preserveAspectRatio', 'xMinYMin meet')
       .attr('width', this._chartWidth)
       .attr('height', this._chartHeight)
-      // .attr('viewBox', ''
-      //   + '0 0 '  + this._chartWidth
-      //   + ' '     + this._chartHeight
-      // )
+      .attr('viewBox', ''
+        + '0 0 '  + this._chartWidth
+        + ' '     + this._chartHeight
+      )
+      .attr('preserveAspectRatio', 'xMinYMin meet')
       .classed('svg-content-responsive', true)
       .style('font-size',       this._chartsMain.fontSizes.basic+'px')
       .style('font-family',     'Arial, sans-serif')

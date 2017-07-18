@@ -95,6 +95,9 @@ class AvailabilityChart extends Chart
   	let yPos = this._chartPos.top
   	let width = this._chartPos.width / (MONTHS_IN_YEAR.length*2)
 
+    // Save initial yPos to calculate how much height must be added
+    let startYPos = yPos
+
     // For each year
   	for (let yearIdx = 0; yearIdx < numYears; yearIdx++)
     {
@@ -222,8 +225,8 @@ class AvailabilityChart extends Chart
         }
       )
 
-    // TODO: generic!
-    this._resizeChartHeight(500)
+    // Add height: (final y pos - start y pos - start height)
+    this._resizeChartHeight(yPos - startYPos - this._chartPos.height)
 
 
     // ------------------------------------------------------------------------
