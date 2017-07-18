@@ -237,7 +237,6 @@ class AvailabilityChart extends Chart
     yPos = 0
       + this._chartPos.top
       + width/2
-      + this._chartsMain.padding
 
     for (let yearIdx = 0; yearIdx < numYears; yearIdx++)
     {
@@ -246,7 +245,7 @@ class AvailabilityChart extends Chart
       this._chart.append('text')
         .attr('class', 'ac-year')
         .attr('text-anchor', 'end')
-        .attr('font-size', (this._chartMain.style.headFontSize + 'em'))
+        .attr('font-size', (this._chartsMain.fontSizes.normal + 'em'))
         .attr('x', 0
           + this._chartPos.left
           - this._chartsMain.padding
@@ -285,7 +284,7 @@ class AvailabilityChart extends Chart
       this._chart.append('text')
         .attr('class', 'ac-year')
         .attr('text-anchor', 'middle')
-        .attr('font-size', (this._chartMain.style.headFontSize + 'em'))
+        .attr('font-size', (this._chartsMain.fontSizes.tiny + 'em'))
         .attr('x', 0
           + xPos
           - width/2
@@ -293,14 +292,13 @@ class AvailabilityChart extends Chart
         .attr('y', 0
           + this._chartPos.top
           - this._chartMain.style.colHeadHeight
-          + this._chartsMain.padding
         )
         .text(this._chartMain.headings.temp)
 
       this._chart.append('text')
         .attr('class', 'ac-year')
         .attr('text-anchor', 'middle')
-        .attr('font-size', (this._chartMain.style.headFontSize + 'em'))
+        .attr('font-size', (this._chartsMain.fontSizes.tiny  + 'em'))
         .attr('x', 0
           + xPos
           + width/2
@@ -308,7 +306,6 @@ class AvailabilityChart extends Chart
         .attr('y', 0
           + this._chartPos.top
           - this._chartMain.style.colHeadHeight
-          + this._chartsMain.padding
         )
         .text(this._chartMain.headings.prec)
 
@@ -316,6 +313,25 @@ class AvailabilityChart extends Chart
       xPos += (2*width)
     }
 
+  }
+
+
+  // ========================================================================
+  // Helper function: Resize the height of the chart by x px
+  // ========================================================================
+
+  _resizeChartHeight(shiftUp)
+  {
+    // Resize whole container and footer
+    super._resizeChartHeight(shiftUp);
+
+    // TODO: hack: shift footer up slightly
+    let oldY = this._chart.select('.footer').attr('y')
+    this._chart.select('.source').attr('y', oldY-10)
+    this._chart.select('.ref-url').attr('y', oldY-10)
+
+    // Resize model:
+    this._chartPos.bottom += shiftUp
   }
 
 

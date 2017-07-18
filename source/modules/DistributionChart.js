@@ -276,6 +276,7 @@ class DistributionChart extends Chart
           + this._chartPos[datatypeIdx].bottom
           + ')'
         )
+        .style('font-size', this._chartsMain.fontSizes.small + 'em')
         .call(xAxis)
 
 
@@ -409,7 +410,7 @@ class DistributionChart extends Chart
             )
           }
         )
-        .style('font-size', this._chartsMain.fontSizes.subtitle)
+        .style('font-size', this._chartsMain.fontSizes.large + 'em')
         .style('fill', this._chartMain.subcharts[datatypeIdx].color)
         .style('opacity', this._chartMain.style.boxOpacity)
         .call(boxplots.width(xScale.rangeBand()))
@@ -429,7 +430,7 @@ class DistributionChart extends Chart
           - this._chartMain.margin.top
         )
         .attr('text-anchor', 'middle')
-        .style('font-size', this._chartsMain.fontSizes.title + 'px')
+        .style('font-size', this._chartsMain.fontSizes.large + 'em')
         .text(this._chartMain.subcharts[datatypeIdx].title)
 
     }

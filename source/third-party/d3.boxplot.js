@@ -123,7 +123,7 @@
                     .data([quartileData]);
 
                 box.enter().append("rect")
-                    .attr("class", "box boxplot-rect")
+                    .attr("class", "boxplot-rect")
                     .attr("x", 0)
                     .attr("y", function(d) {
                         return x0(d[2]);
@@ -242,7 +242,7 @@
                     .data(quartileData);
                 if (showLabels == true) {
                     boxTick.enter().append("text")
-                        .attr("class", "box")
+                        .attr("class", "boxplot-tick")
                         .attr("dy", ".3em")
                         .attr("dx", function(d, i) {
                             return i & 1 ? 6 : -6

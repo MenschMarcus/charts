@@ -480,7 +480,7 @@ class ClimateChart extends Chart
     	.attr('shape-rendering', 'crispEdges');
 
     this._chart.selectAll('.tick')
-    	.style('font-size', this._chartMain.fontSizes.tick);
+    	.style('font-size', this._chartsMain.fontSizes.small + 'em');
 
 
     // ------------------------------------------------------------------------
@@ -876,7 +876,7 @@ class ClimateChart extends Chart
 
     this._chart.selectAll('.info')
       .attr('font-weight', 'normal')
-      .style('font-size', this._chartMain.fontSizes.info + 'px')
+      .style('font-size', this._chartsMain.fontSizes.large + 'em')
 
 
     // Cell values: month
@@ -920,7 +920,7 @@ class ClimateChart extends Chart
 
     // Style for cell values
     this._chart.selectAll('.cell')
-      .style('font-size', this._chartMain.fontSizes.table + 'px')
+      .style('font-size', this._chartsMain.fontSizes.large + 'em')
 
 
     // ------------------------------------------------------------------------
@@ -965,7 +965,7 @@ class ClimateChart extends Chart
         this._chart.selectAll('.cell')
           .attr('fill', 'black')
           .attr('font-weight', 'normal')
-          .style('font-size', this._chartMain.fontSizes.table)
+          .style('font-size', this._chartsMain.fontSizes.large + 'em')
           .style('text-shadow', 'none')
       }
     )

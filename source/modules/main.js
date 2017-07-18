@@ -2,6 +2,9 @@
 // 1: Cherrapunjee
 const climateDataIdx = 0
 
+// Initial width and height of chart wrapper
+$('#main-container').width(728)
+
 // ############################################################################
 
 const MONTHS_IN_YEAR =
@@ -24,33 +27,34 @@ let main =
       positions:        // [px]
       {
         width:          728,  // Reference: full width
-        height:         420,  // Reference: initial full height
+        height:         440,  // Reference: initial full height
         title:
         {
-          top:          15,
+          top:          5,
         },
         subtitle:
         {
-          top:          35,
+          top:          30,
         },
         main:
         {
-          top:          70,
-          bottom:       30,
+          top:          60,
+          bottom:       10,
         },
         footer:
         {
           top:          420,
         },
       },
-      fontSizes:    // [px]
+      fontSizes:    // [em]
       {
-        basic:          12,
-        title:          16,
-        subtitle:       13,
-        source:         11,
+        title:          1.5,
+        large:          1.1,
+        normal:         1.0,
+        small:          0.9,
+        tiny:           0.7,
       },
-      padding:          5,
+      padding:          10,
       colors:
       {
         temp:           d3.rgb(230,20, 20 ),
@@ -73,7 +77,7 @@ let main =
             left:         30,
             top:          10,
             right:        30,
-            bottom:       10,
+            bottom:       50,
           },
           style:
           {
@@ -82,12 +86,6 @@ let main =
             axesWidth:      2,
             lineWidth:      1.5,  // Lines for prec and temp
             areaOpacity:    0.7,  // For the areas between prec/temp lines
-          },
-          fontSizes:      // [px]
-          {
-            tick:         13,
-            info:         15,
-            table:        14,
           },
           prec:
           {
@@ -132,7 +130,7 @@ let main =
             left :      30,
             top:        30,
             right:      30,
-            bottom:     -30,
+            bottom:     0,
           },
           style:
           {
@@ -169,8 +167,8 @@ let main =
           {
             left:         30,
             top:          0,
-            right:        30,
-            bottom:       -50,
+            right:        20,
+            bottom:       0,
           },
           style:
           {
@@ -178,15 +176,18 @@ let main =
             squareWidth:      25,   // Dimension of cell sqares
             rowHeadWidth:     20,   // Width of row "heading" (year number)
             colHeadHeight:    12,   // Height of col heading (month / value)
-            headFontSize:     0.75, // [em] heading font size
-            cellOpacity:      0.55, // Opacity value for colored cells
-            emphResizeFactor: 2.00,  // OnHover on cell, resize to
+            cellOpacity:      0.5,  // Opacity value for colored cells
+            emphResizeFactor: 2.0,  // OnHover on cell, resize to
           },
           headings:
           {
             temp:         "Temp",
             prec:         "Prec",
           }
+        },
+
+        {
+          name:         'nuthin',
         },
       ],
     },
@@ -214,6 +215,7 @@ for (let month of data.prec)
   data.prec_long.push(month.raw_data)
 
 // DRAW !!!
-new DistributionChart(main, data)
 new ClimateChart(main, data)
+new DistributionChart(main, data)
 new AvailabilityChart(main, data)
+new Chart(main, 'nuthin', data)
