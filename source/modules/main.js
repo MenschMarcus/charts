@@ -3,7 +3,7 @@
 const climateDataIdx = 0
 
 // Initial width and height of chart wrapper
-$('#main-container').width(728)
+$('#main-container').width(800)
 
 // ############################################################################
 
@@ -165,9 +165,9 @@ let main =
           name:         'availability-chart',
           margin:         // [px]
           {
-            left:         30,
-            top:          0,
-            right:        20,
+            left:         50,
+            top:          30,
+            right:        0,
             bottom:       0,
           },
           style:
@@ -184,10 +184,6 @@ let main =
             temp:         "Temp",
             prec:         "Prec",
           }
-        },
-
-        {
-          name:         'nuthin',
         },
       ],
     },
@@ -218,4 +214,3 @@ for (let month of data.prec)
 new ClimateChart(main, data)
 new DistributionChart(main, data)
 new AvailabilityChart(main, data)
-new Chart(main, 'nuthin', data)

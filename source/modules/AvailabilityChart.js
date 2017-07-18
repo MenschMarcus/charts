@@ -40,22 +40,20 @@ class AvailabilityChart extends Chart
 
     // Position values of actual climate chart
     // Pos from top, bottom, left, right and position of horizontal break bar
-    this._chartPos =
-    {
+    this._chartPos = {
       left: ( 0
         + this._mainPos.left
         + this._chartsMain.padding
         + this._chartMain.margin.left
-        + this._chartMain.style.rowHeadWidth
       ),
       top: ( 0
         + this._mainPos.top
         + this._chartsMain.padding
         + this._chartMain.margin.top
-        + this._chartMain.style.colHeadHeight*2
       ),
       right: ( 0
-        + this._mainPos.right
+        + this._mainPos.left
+        + this._mainPos.width
         - this._chartsMain.padding
         - this._chartMain.margin.right
       ),
@@ -65,7 +63,7 @@ class AvailabilityChart extends Chart
         - this._chartMain.margin.bottom
       ),
     }
-    this._chartPos.width =  this._chartPos.right -  this._chartPos.left
+    this._chartPos.width =  this._chartPos.right - this._chartPos.left
     this._chartPos.height = this._chartPos.bottom - this._chartPos.top
 
 
@@ -91,9 +89,9 @@ class AvailabilityChart extends Chart
     let numYears = this._climateData.years[1] - this._climateData.years[0] + 1
 
     // Inital values for calculating svg rect positions
-  	let xPos = this._chartPos.left
-  	let yPos = this._chartPos.top
-  	let width = this._chartPos.width / (MONTHS_IN_YEAR.length*2)
+  	let xPos =   this._chartPos.left
+  	let yPos =   this._chartPos.top
+  	let width =  this._chartPos.width / (MONTHS_IN_YEAR.length*2)
 
     // Save initial yPos to calculate how much height must be added
     let startYPos = yPos
@@ -324,11 +322,6 @@ class AvailabilityChart extends Chart
   {
     // Resize whole container and footer
     super._resizeChartHeight(shiftUp);
-
-    // TODO: hack: shift footer up slightly
-    let oldY = this._chart.select('.footer').attr('y')
-    this._chart.select('.source').attr('y', oldY-10)
-    this._chart.select('.ref-url').attr('y', oldY-10)
 
     // Resize model:
     this._chartPos.bottom += shiftUp
